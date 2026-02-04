@@ -27,8 +27,8 @@ export default defineNuxtConfig({
     enabled: false,
   },
 
-  // Static site generation for Netlify - enable SSR for proper meta tags
-  ssr: true,
+  // Static site generation for Netlify
+  ssr: false,
   devtools: { enabled: true },
 
   // App configuration
@@ -51,6 +51,16 @@ export default defineNuxtConfig({
 
   // CSS configuration - with Nuxt 4 srcDir defaults to app/
   css: ['~/assets/css/main.css'],
+
+  // Build configuration to suppress Tailwind sourcemap warnings
+  vite: {
+    build: {
+      sourcemap: false,
+    },
+    css: {
+      devSourcemap: false,
+    },
+  },
 
   vue: {
     compilerOptions: {
