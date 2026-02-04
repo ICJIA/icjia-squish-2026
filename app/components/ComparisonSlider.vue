@@ -92,6 +92,8 @@ const handleMouseUp = () => {
 }
 
 const handleTouchMove = (e: TouchEvent) => {
-  handleMove(e.touches[0].clientX)
+  if (e.touches[0]) {
+    handleMove(e.touches[0].clientX)
+  }
 }
 </script>
