@@ -218,9 +218,14 @@
     </main>
     <footer class="mt-16 border-t border-border">
       <div class="mx-auto max-w-[2000px] px-6 py-8 lg:px-10">
-        <p class="text-sm text-muted-foreground">
-          All processing happens locally in your browser. Your images never leave your device.
-        </p>
+        <div class="flex flex-col items-center gap-4 text-center">
+          <p class="text-lg font-semibold tracking-wide" style="color: #45d87a;">
+            Privacy-focused • Real-time preview • Instant compression
+          </p>
+          <p class="text-sm text-muted-foreground">
+            All processing happens locally in your browser. Your images never leave your device.
+          </p>
+        </div>
       </div>
     </footer>
   </div>
