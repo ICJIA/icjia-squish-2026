@@ -1,8 +1,8 @@
 <template>
   <div class="min-h-screen bg-background">
     <header class="border-b border-border">
-      <div class="mx-auto flex h-24 max-w-[2000px] items-center justify-between px-6 pb-6 lg:px-10">
-        <h1 class="text-5xl font-black tracking-tighter text-foreground sm:text-6xl lg:text-7xl">
+      <div class="mx-auto flex h-32 max-w-[2000px] items-center justify-between px-6 py-8 lg:px-10">
+        <h1 class="text-6xl font-black tracking-tighter text-foreground sm:text-7xl lg:text-8xl">
           Squish
         </h1>
         <span class="hidden text-sm tracking-wide text-muted-foreground sm:block">image compression for writers and designers</span>
