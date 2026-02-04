@@ -5,7 +5,19 @@
         <h1 class="text-6xl font-black tracking-tighter text-foreground sm:text-7xl lg:text-8xl">
           Squish
         </h1>
-        <span class="hidden text-sm tracking-wide text-muted-foreground sm:block">image compression for writers and designers</span>
+        <div class="flex items-center gap-6">
+          <span class="hidden text-sm tracking-wide text-muted-foreground sm:block">image compression for writers and designers</span>
+          <a
+            href="https://github.com/ICJIA/icjia-squish-2026"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
+            aria-label="View source on GitHub"
+          >
+            <UIcon name="i-lucide-github" class="h-6 w-6" />
+            <span class="hidden text-sm lg:inline">GitHub</span>
+          </a>
+        </div>
       </div>
     </header>
     <main class="mx-auto max-w-[2000px] px-6 py-12 lg:px-10 lg:py-16">
