@@ -1,11 +1,11 @@
 # Squish
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Nuxt](https://img.shields.io/badge/Nuxt-4.3.0-00DC82?logo=nuxt.js&logoColor=white)](https://nuxt.com/)
-[![Vue](https://img.shields.io/badge/Vue-3.5.13-4FC08D?logo=vue.js&logoColor=white)](https://vuejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7.3-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Nuxt UI](https://img.shields.io/badge/Nuxt_UI-3.0.0-00DC82)](https://ui.nuxt.com/)
-[![Nuxt SEO](https://img.shields.io/badge/Nuxt_SEO-3.4.0-00DC82)](https://nuxtseo.com/)
+[![Nuxt](https://img.shields.io/badge/Nuxt-4.3.x-00DC82?logo=nuxt.js&logoColor=white)](https://nuxt.com/)
+[![Vue](https://img.shields.io/badge/Vue-3.5.x-4FC08D?logo=vue.js&logoColor=white)](https://vuejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Nuxt UI](https://img.shields.io/badge/Nuxt_UI-3.0.x-00DC82)](https://ui.nuxt.com/)
+[![Nuxt SEO](https://img.shields.io/badge/Nuxt_SEO-3.4.x-00DC82)](https://nuxtseo.com/)
 
 > **Image compression for writers and designers**
 
@@ -153,8 +153,7 @@ The `netlify.toml` file is pre-configured with:
 - **Nitro preset**: `netlify-static` for optimal static site generation
 - **Output directory**: `dist` (Nuxt 4 custom configuration)
 - **Security headers**: X-Frame-Options, CSP, Referrer-Policy
-- **Cache headers**: 1-year cache for `/_nuxt/*` assets
-- **SPA fallback**: Client-side routing support
+- **Cache headers**: 1-year cache for `/_nuxt/*` assets with immutable flag
 
 ### Environment Variables
 
