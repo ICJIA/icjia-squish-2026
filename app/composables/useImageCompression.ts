@@ -11,8 +11,8 @@ export interface CompressedImage {
 export const useImageCompression = () => {
   const compressImage = async (
     file: File,
-    compressionQuality: number
-  ): Promise<{ blob: Blob; url: string }> => {
+    compressionQuality: number,
+  ): Promise<{ blob: Blob, url: string }> => {
     return new Promise((resolve, reject) => {
       const img = new Image()
       img.crossOrigin = 'anonymous'
@@ -35,12 +35,13 @@ export const useImageCompression = () => {
             if (blob) {
               const url = URL.createObjectURL(blob)
               resolve({ blob, url })
-            } else {
+            }
+            else {
               reject(new Error('Could not compress image'))
             }
           },
           'image/jpeg',
-          compressionQuality / 100
+          compressionQuality / 100,
         )
       }
 
@@ -68,4 +69,3 @@ export const useImageCompression = () => {
     getSavings,
   }
 }
-

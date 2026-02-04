@@ -14,8 +14,8 @@
       alt="Original"
       class="absolute inset-0 h-full w-full object-contain"
       draggable="false"
-    />
-    
+    >
+
     <!-- Compressed Image (clipped, on top) -->
     <img
       :src="compressedUrl || '/placeholder.svg'"
@@ -23,7 +23,7 @@
       class="absolute inset-0 h-full w-full object-contain"
       :style="{ clipPath: `inset(0 ${100 - position}% 0 0)` }"
       draggable="false"
-    />
+    >
 
     <!-- Divider Line -->
     <div
@@ -34,8 +34,14 @@
     >
       <!-- Handle -->
       <div class="absolute top-1/2 left-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-primary bg-background shadow-lg">
-        <UIcon name="i-lucide-chevron-left" class="h-4 w-4 -mr-1 text-primary" />
-        <UIcon name="i-lucide-chevron-right" class="h-4 w-4 -ml-1 text-primary" />
+        <UIcon
+          name="i-lucide-chevron-left"
+          class="h-4 w-4 -mr-1 text-primary"
+        />
+        <UIcon
+          name="i-lucide-chevron-right"
+          class="h-4 w-4 -ml-1 text-primary"
+        />
       </div>
     </div>
 
@@ -50,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+const _props = defineProps<{
   originalUrl: string
   compressedUrl: string
   originalSize: number
@@ -89,4 +95,3 @@ const handleTouchMove = (e: TouchEvent) => {
   handleMove(e.touches[0].clientX)
 }
 </script>
-

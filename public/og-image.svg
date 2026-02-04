@@ -1,0 +1,73 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d1410;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Tilted code pattern background - VERY VISIBLE -->
+  <g transform="rotate(-12 600 315)" opacity="0.65" fill="#45d87a" font-family="'Courier New', monospace" font-size="14" letter-spacing="0.5">
+    <!-- Row 1 -->
+    <text x="0" y="50">const quality = ref(75)  •  const compress = async (file) =&gt; canvas.toBlob(blob, 'jpeg', quality)</text>
+    
+    <!-- Row 2 -->
+    <text x="0" y="100">interface CompressedImage { originalSize: number; compressedSize: number }</text>
+    
+    <!-- Row 3 -->
+    <text x="0" y="150">watch(quality, () =&gt; recompressAll())  •  const preview = useComparisonSlider()</text>
+    
+    <!-- Row 4 -->
+    <text x="0" y="200">const formatSize = (bytes) =&gt; Math.round(bytes / 1024) + 'KB'</text>
+    
+    <!-- Row 5 -->
+    <text x="0" y="250">function downloadImage(img) { const url = URL.createObjectURL(blob); link.download = 'compressed.jpg' }</text>
+    
+    <!-- Row 6 -->
+    <text x="0" y="300">const images = ref&lt;CompressedImage[]&gt;([])  •  selectedImage = computed(() =&gt; images.find(img =&gt; img.id))</text>
+    
+    <!-- Row 7 -->
+    <text x="0" y="350">async processFiles(files: File[]) { for (const file of files) await compressImage(file) }</text>
+    
+    <!-- Row 8 -->
+    <text x="0" y="400">const handleDrop = (e: DragEvent) =&gt; { e.preventDefault(); processFiles(e.dataTransfer.files) }</text>
+    
+    <!-- Row 9 -->
+    <text x="0" y="450">const position = ref(50)  •  isDragging = ref(false)  •  handleMove = (x) =&gt; position.value = calcPercentage(x)</text>
+    
+    <!-- Row 10 -->
+    <text x="0" y="500">useSeoMeta({ title: 'Squish' })  •  const { formatSize } = useImageCompression()</text>
+    
+    <!-- Row 11 -->
+    <text x="0" y="550">export default defineNuxtConfig({ modules: ['@nuxt/ui', '@nuxtjs/seo'] })</text>
+    
+    <!-- Row 12 -->
+    <text x="0" y="600">canvas.width = img.width  •  canvas.height = img.height  •  ctx.drawImage(img, 0, 0)</text>
+  </g>
+  
+  <!-- Subtle overlay to prevent overwhelming the text -->
+  <defs>
+    <radialGradient id="fade" cx="50%" cy="50%">
+      <stop offset="25%" style="stop-color:#000000;stop-opacity:0" />
+      <stop offset="85%" style="stop-color:#000000;stop-opacity:0.5" />
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#fade)"/>
+  
+  <!-- Title -->
+  <text x="600" y="280" font-family="Arial, sans-serif" font-size="140" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="-5">
+    Squish
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="360" font-family="Arial, sans-serif" font-size="32" fill="#b0b0b0" text-anchor="middle" letter-spacing="2">
+    IMAGE COMPRESSION FOR WRITERS AND DESIGNERS
+  </text>
+  
+  <!-- Feature line -->
+  <text x="600" y="450" font-family="Arial, sans-serif" font-size="24" fill="#3dbf6e" text-anchor="middle" font-weight="600">
+    Privacy-focused • Real-time preview • Instant compression
+  </text>
+</svg>

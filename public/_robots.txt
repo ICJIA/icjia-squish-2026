@@ -1,0 +1,11 @@
+# Sitemap
+sitemap.xml
+sitemap-*.xml
+
+# User agents
+User-agent: *
+Allow: /
+
+# Disallow admin or private sections (if any)
+# User-agent: *
+# Disallow: /admin/

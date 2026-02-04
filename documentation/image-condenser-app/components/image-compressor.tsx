@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import React, { useCallback, useState, useRef, useEffect } from "react"
-import { Slider } from "@/components/ui/slider"
-import { Download, X, ImageIcon, ChevronLeft, ChevronRight } from "lucide-react"
+import React, { useCallback, useState, useRef, useEffect } from 'react'
+import { Download, X, ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Slider } from '@/components/ui/slider'
 
 interface CompressedImage {
   id: string
@@ -25,9 +25,9 @@ function ComparisonSlider({ originalUrl, compressedUrl, originalSize, compressed
   const isDragging = useRef(false)
 
   const formatSize = (bytes: number) => {
-    if (bytes === 0) return "0 B"
+    if (bytes === 0) return '0 B'
     const k = 1024
-    const sizes = ["B", "KB", "MB"]
+    const sizes = ['B', 'KB', 'MB']
     const i = Math.floor(Math.log(bytes) / Math.log(k))
     return `${Number.parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`
   }
@@ -69,15 +69,15 @@ function ComparisonSlider({ originalUrl, compressedUrl, originalSize, compressed
     >
       {/* Original Image (full, underneath) */}
       <img
-        src={originalUrl || "/placeholder.svg"}
+        src={originalUrl || '/placeholder.svg'}
         alt="Original"
         className="absolute inset-0 h-full w-full object-contain"
         draggable={false}
       />
-      
+
       {/* Compressed Image (clipped, on top) - using clip-path for precise reveal */}
       <img
-        src={compressedUrl || "/placeholder.svg"}
+        src={compressedUrl || '/placeholder.svg'}
         alt="Compressed"
         className="absolute inset-0 h-full w-full object-contain"
         style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
@@ -100,42 +100,46 @@ function ComparisonSlider({ originalUrl, compressedUrl, originalSize, compressed
 
       {/* Labels */}
       <div className="absolute top-3 left-3 rounded bg-background/90 px-2 py-1 text-xs font-medium text-primary backdrop-blur-sm">
-        Compressed: {formatSize(compressedSize)}
+        Compressed:
+        {' '}
+        {formatSize(compressedSize)}
       </div>
       <div className="absolute top-3 right-3 rounded bg-background/90 px-2 py-1 text-xs font-medium text-muted-foreground backdrop-blur-sm">
-        Original: {formatSize(originalSize)}
+        Original:
+        {' '}
+        {formatSize(originalSize)}
       </div>
     </div>
   )
 }
 
-function QualityIndicator({ quality, savings }: { quality: number; savings: number }) {
+function QualityIndicator({ quality, savings }: { quality: number, savings: number }) {
   const getQualityAssessment = () => {
     if (quality >= 85) {
       return {
-        label: "Excellent",
-        description: "Virtually no visible quality loss. Best for print or high-detail images.",
-        color: "text-primary"
+        label: 'Excellent',
+        description: 'Virtually no visible quality loss. Best for print or high-detail images.',
+        color: 'text-primary',
       }
     }
     if (quality >= 70) {
       return {
-        label: "Recommended",
-        description: "Optimal balance of quality and file size. Perfect for web and blogs.",
-        color: "text-primary"
+        label: 'Recommended',
+        description: 'Optimal balance of quality and file size. Perfect for web and blogs.',
+        color: 'text-primary',
       }
     }
     if (quality >= 50) {
       return {
-        label: "Good",
-        description: "Noticeable compression on close inspection. Good for thumbnails or previews.",
-        color: "text-yellow-400"
+        label: 'Good',
+        description: 'Noticeable compression on close inspection. Good for thumbnails or previews.',
+        color: 'text-yellow-400',
       }
     }
     return {
-      label: "Aggressive",
-      description: "Visible artifacts likely. Use only when file size is critical.",
-      color: "text-orange-400"
+      label: 'Aggressive',
+      description: 'Visible artifacts likely. Use only when file size is critical.',
+      color: 'text-orange-400',
     }
   }
 
@@ -149,7 +153,8 @@ function QualityIndicator({ quality, savings }: { quality: number; savings: numb
         </span>
         {savings > 0 && (
           <span className="text-sm text-muted-foreground">
-            {savings}% smaller
+            {savings}
+            % smaller
           </span>
         )}
       </div>
@@ -168,17 +173,17 @@ export function ImageCompressor() {
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null)
 
   const compressImage = useCallback(
-    async (file: File, compressionQuality: number): Promise<{ blob: Blob; url: string }> => {
+    async (file: File, compressionQuality: number): Promise<{ blob: Blob, url: string }> => {
       return new Promise((resolve, reject) => {
         const img = new Image()
-        img.crossOrigin = "anonymous"
+        img.crossOrigin = 'anonymous'
 
         img.onload = () => {
-          const canvas = document.createElement("canvas")
-          const ctx = canvas.getContext("2d")
+          const canvas = document.createElement('canvas')
+          const ctx = canvas.getContext('2d')
 
           if (!ctx) {
-            reject(new Error("Could not get canvas context"))
+            reject(new Error('Could not get canvas context'))
             return
           }
 
@@ -191,20 +196,21 @@ export function ImageCompressor() {
               if (blob) {
                 const url = URL.createObjectURL(blob)
                 resolve({ blob, url })
-              } else {
-                reject(new Error("Could not compress image"))
+              }
+              else {
+                reject(new Error('Could not compress image'))
               }
             },
-            "image/jpeg",
-            compressionQuality / 100
+            'image/jpeg',
+            compressionQuality / 100,
           )
         }
 
-        img.onerror = () => reject(new Error("Could not load image"))
+        img.onerror = () => reject(new Error('Could not load image'))
         img.src = URL.createObjectURL(file)
       })
     },
-    []
+    [],
   )
 
   const processImages = useCallback(
@@ -214,7 +220,7 @@ export function ImageCompressor() {
       const newImages: CompressedImage[] = []
 
       for (const file of files) {
-        if (!file.type.startsWith("image/")) continue
+        if (!file.type.startsWith('image/')) continue
 
         const id = crypto.randomUUID()
         const previewUrl = URL.createObjectURL(file)
@@ -230,7 +236,8 @@ export function ImageCompressor() {
             previewUrl,
             compressedUrl: url,
           })
-        } catch {
+        }
+        catch {
           newImages.push({
             id,
             originalFile: file,
@@ -243,13 +250,13 @@ export function ImageCompressor() {
         }
       }
 
-      setImages((prev) => [...prev, ...newImages])
+      setImages(prev => [...prev, ...newImages])
       if (newImages.length > 0 && !selectedImageId) {
         setSelectedImageId(newImages[0].id)
       }
       setIsCompressing(false)
     },
-    [compressImage, quality, selectedImageId]
+    [compressImage, quality, selectedImageId],
   )
 
   const recompressAll = useCallback(async () => {
@@ -270,10 +277,11 @@ export function ImageCompressor() {
             compressedSize: blob.size,
             compressedUrl: url,
           }
-        } catch {
+        }
+        catch {
           return img
         }
-      })
+      }),
     )
 
     setImages(recompressed)
@@ -284,7 +292,7 @@ export function ImageCompressor() {
   const qualityRef = useRef(quality[0])
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const imagesRef = useRef(images)
-  
+
   // Keep imagesRef in sync
   useEffect(() => {
     imagesRef.current = images
@@ -295,13 +303,13 @@ export function ImageCompressor() {
     if (qualityRef.current === quality[0]) {
       return
     }
-    
+
     if (imagesRef.current.length === 0) {
       qualityRef.current = quality[0]
       return
     }
-    
-    console.log("[v0] Quality changed from", qualityRef.current, "to", quality[0])
+
+    console.log('[v0] Quality changed from', qualityRef.current, 'to', quality[0])
     qualityRef.current = quality[0]
 
     // Clear any pending recompression
@@ -311,7 +319,7 @@ export function ImageCompressor() {
 
     // Debounce recompression for 150ms to allow smooth slider interaction
     debounceTimerRef.current = setTimeout(async () => {
-      console.log("[v0] Starting recompression at quality:", quality[0])
+      console.log('[v0] Starting recompression at quality:', quality[0])
       setIsCompressing(true)
 
       const currentImages = imagesRef.current
@@ -322,22 +330,23 @@ export function ImageCompressor() {
               URL.revokeObjectURL(img.compressedUrl)
             }
             const { blob, url } = await compressImage(img.originalFile, quality[0])
-            console.log("[v0] Recompressed", img.originalFile.name, "new size:", blob.size)
+            console.log('[v0] Recompressed', img.originalFile.name, 'new size:', blob.size)
             return {
               ...img,
               compressedBlob: blob,
               compressedSize: blob.size,
               compressedUrl: url,
             }
-          } catch {
+          }
+          catch {
             return img
           }
-        })
+        }),
       )
 
       setImages(recompressed)
       setIsCompressing(false)
-      console.log("[v0] Recompression complete")
+      console.log('[v0] Recompression complete')
     }, 150)
 
     return () => {
@@ -352,14 +361,14 @@ export function ImageCompressor() {
       e.preventDefault()
       setIsDragging(false)
 
-      const files = Array.from(e.dataTransfer.files).filter((f) =>
-        f.type.startsWith("image/")
+      const files = Array.from(e.dataTransfer.files).filter(f =>
+        f.type.startsWith('image/'),
       )
       if (files.length > 0) {
         processImages(files)
       }
     },
-    [processImages]
+    [processImages],
   )
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -378,19 +387,19 @@ export function ImageCompressor() {
       if (files) {
         processImages(Array.from(files))
       }
-      e.target.value = ""
+      e.target.value = ''
     },
-    [processImages]
+    [processImages],
   )
 
   const removeImage = useCallback((id: string) => {
     setImages((prev) => {
-      const img = prev.find((i) => i.id === id)
+      const img = prev.find(i => i.id === id)
       if (img) {
         URL.revokeObjectURL(img.previewUrl)
         if (img.compressedUrl) URL.revokeObjectURL(img.compressedUrl)
       }
-      const filtered = prev.filter((i) => i.id !== id)
+      const filtered = prev.filter(i => i.id !== id)
       if (selectedImageId === id) {
         setSelectedImageId(filtered[0]?.id || null)
       }
@@ -410,9 +419,9 @@ export function ImageCompressor() {
   const downloadImage = useCallback((img: CompressedImage) => {
     if (!img.compressedUrl || !img.compressedBlob) return
 
-    const link = document.createElement("a")
+    const link = document.createElement('a')
     const originalName = img.originalFile.name
-    const baseName = originalName.substring(0, originalName.lastIndexOf(".")) || originalName
+    const baseName = originalName.substring(0, originalName.lastIndexOf('.')) || originalName
     link.download = `${baseName}-squished.jpg`
     link.href = img.compressedUrl
     link.click()
@@ -427,9 +436,9 @@ export function ImageCompressor() {
   }, [images, downloadImage])
 
   const formatSize = (bytes: number) => {
-    if (bytes === 0) return "0 B"
+    if (bytes === 0) return '0 B'
     const k = 1024
-    const sizes = ["B", "KB", "MB"]
+    const sizes = ['B', 'KB', 'MB']
     const i = Math.floor(Math.log(bytes) / Math.log(k))
     return `${Number.parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`
   }
@@ -442,7 +451,7 @@ export function ImageCompressor() {
   const totalOriginal = images.reduce((acc, img) => acc + img.originalSize, 0)
   const totalCompressed = images.reduce((acc, img) => acc + img.compressedSize, 0)
   const totalSavings = getSavings(totalOriginal, totalCompressed)
-  
+
   const selectedImage = images.find(img => img.id === selectedImageId)
 
   return (
@@ -463,7 +472,7 @@ export function ImageCompressor() {
         {/* Intro Section */}
         <div className="mb-16 max-w-xl">
           <p className="text-xl leading-relaxed text-muted-foreground">
-            Drop your images below to compress them instantly. Drag the slider on the preview 
+            Drop your images below to compress them instantly. Drag the slider on the preview
             to compare original and compressed versions side by side.
           </p>
         </div>
@@ -478,8 +487,8 @@ export function ImageCompressor() {
               onDragLeave={handleDragLeave}
               className={`relative flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded border-2 border-dashed transition-all duration-200 ${
                 isDragging
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-muted-foreground"
+                  ? 'border-primary bg-primary/5'
+                  : 'border-border hover:border-muted-foreground'
               }`}
             >
               <input
@@ -491,10 +500,10 @@ export function ImageCompressor() {
                 aria-label="Select images to compress"
               />
               <div className="flex flex-col items-center gap-4 px-8 text-center">
-                <ImageIcon className={`h-8 w-8 transition-colors ${isDragging ? "text-primary" : "text-muted-foreground"}`} />
+                <ImageIcon className={`h-8 w-8 transition-colors ${isDragging ? 'text-primary' : 'text-muted-foreground'}`} />
                 <div>
-                  <p className={`text-lg font-medium transition-colors ${isDragging ? "text-primary" : "text-foreground"}`}>
-                    {isDragging ? "Release to squish" : "Drop images here"}
+                  <p className={`text-lg font-medium transition-colors ${isDragging ? 'text-primary' : 'text-foreground'}`}>
+                    {isDragging ? 'Release to squish' : 'Drop images here'}
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
                     or click to browse — PNG and JPG supported
@@ -524,7 +533,9 @@ export function ImageCompressor() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-semibold text-foreground">
-                    {images.length} {images.length === 1 ? "image" : "images"}
+                    {images.length}
+                    {' '}
+                    {images.length === 1 ? 'image' : 'images'}
                   </h2>
                   <button
                     type="button"
@@ -543,10 +554,10 @@ export function ImageCompressor() {
                       <div
                         key={img.id}
                         className={`group relative cursor-pointer overflow-hidden rounded border-2 transition-all ${
-                          isSelected ? "border-primary" : "border-transparent hover:border-muted-foreground"
+                          isSelected ? 'border-primary' : 'border-transparent hover:border-muted-foreground'
                         }`}
                         onClick={() => setSelectedImageId(img.id)}
-                        onKeyDown={(e) => e.key === 'Enter' && setSelectedImageId(img.id)}
+                        onKeyDown={e => e.key === 'Enter' && setSelectedImageId(img.id)}
                         role="button"
                         tabIndex={0}
                       >
@@ -557,11 +568,13 @@ export function ImageCompressor() {
                             className="h-full w-full object-cover"
                           />
                         </div>
-                        
+
                         {/* Savings Badge */}
                         {savings > 0 && (
                           <div className="absolute top-2 left-2 rounded bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-foreground">
-                            -{savings}%
+                            -
+                            {savings}
+                            %
                           </div>
                         )}
 
@@ -615,10 +628,11 @@ export function ImageCompressor() {
                   Quality
                 </h3>
                 <span className="text-4xl font-black tabular-nums text-primary">
-                  {quality[0]}%
+                  {quality[0]}
+                  %
                 </span>
               </div>
-              
+
               <Slider
                 value={quality}
                 onValueChange={setQuality}
@@ -627,14 +641,14 @@ export function ImageCompressor() {
                 step={5}
                 className="w-full"
               />
-              
+
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Smaller file</span>
                 <span>Better quality</span>
               </div>
 
-              <QualityIndicator 
-                quality={quality[0]} 
+              <QualityIndicator
+                quality={quality[0]}
                 savings={totalSavings}
               />
             </div>
@@ -645,7 +659,7 @@ export function ImageCompressor() {
                 <h3 className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
                   Summary
                 </h3>
-                
+
                 <div className="space-y-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Original</span>
@@ -660,7 +674,8 @@ export function ImageCompressor() {
                       <span className="text-sm text-muted-foreground">Saved</span>
                       <div className="text-right">
                         <span className="text-3xl font-black text-primary">
-                          {totalSavings}%
+                          {totalSavings}
+                          %
                         </span>
                         <p className="text-sm text-muted-foreground">
                           {formatSize(totalOriginal - totalCompressed)}

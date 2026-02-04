@@ -7,11 +7,11 @@
 <script setup lang="ts">
 useHead({
   htmlAttrs: {
-    lang: "en",
-    class: "dark",
+    lang: 'en',
+    class: 'dark',
   },
   bodyAttrs: {
-    class: "bg-background text-foreground",
+    class: 'bg-background text-foreground',
   },
-});
+})
 </script>
