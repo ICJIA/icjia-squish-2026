@@ -29,6 +29,15 @@ export default defineNuxtConfig({
 
   // Static site generation for Netlify
   ssr: false,
+  
+  // Nitro configuration for static output
+  nitro: {
+    preset: 'static',
+    output: {
+      dir: 'dist',
+      publicDir: 'dist',
+    },
+  },
   devtools: { enabled: true },
 
   // App configuration
