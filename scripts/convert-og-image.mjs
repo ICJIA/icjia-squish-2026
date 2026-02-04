@@ -1,5 +1,6 @@
+import { readFileSync } from 'node:fs'
+
 import sharp from 'sharp'
-import { readFileSync } from 'fs'
 
 const svg = readFileSync('./public/og-image.svg')
 
@@ -8,4 +9,4 @@ await sharp(svg)
   .png()
   .toFile('./public/og-image.png')
 
-console.log('✅ OG image converted to PNG: og-image.png (1200x630)')
+console.warn('✅ OG image converted to PNG: og-image.png (1200x630)')

@@ -1,10 +1,11 @@
 # Squish
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Nuxt](https://img.shields.io/badge/Nuxt-3.15.1-00DC82?logo=nuxt.js&logoColor=white)](https://nuxt.com/)
+[![Nuxt](https://img.shields.io/badge/Nuxt-4.3.0-00DC82?logo=nuxt.js&logoColor=white)](https://nuxt.com/)
 [![Vue](https://img.shields.io/badge/Vue-3.5.13-4FC08D?logo=vue.js&logoColor=white)](https://vuejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7.3-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Nuxt UI](https://img.shields.io/badge/Nuxt_UI-3.0.0-00DC82)](https://ui.nuxt.com/)
+[![Nuxt SEO](https://img.shields.io/badge/Nuxt_SEO-3.4.0-00DC82)](https://nuxtseo.com/)
 
 > **Image compression for writers and designers**
 
@@ -28,8 +29,10 @@ A modern, privacy-focused image compression tool built with Nuxt 4. Squish helps
 
 ### Prerequisites
 
-- Node.js 18+ (see `.nvmrc` for exact version)
+- Node.js 20+ (see `.nvmrc` for exact version)
 - yarn or npm
+
+> **Note**: This is a **Nuxt 4** application. Make sure you're using compatible tooling.
 
 ### Installation
 
@@ -62,12 +65,14 @@ yarn build
 
 ## 🛠️ Tech Stack
 
-- **[Nuxt 4](https://nuxt.com/)** - The Intuitive Vue Framework
+- **[Nuxt 4](https://nuxt.com/)** - Latest version of The Intuitive Vue Framework
 - **[Vue 3](https://vuejs.org/)** - Progressive JavaScript Framework
 - **[Nuxt UI](https://ui.nuxt.com/)** - Fully styled and customizable components
+- **[Nuxt SEO](https://nuxtseo.com/)** - Complete SEO solution with sitemap, robots, and meta tags
 - **[TypeScript](https://www.typescriptlang.org/)** - Type-safe JavaScript
 - **[Tailwind CSS v4](https://tailwindcss.com/)** - Utility-first CSS framework
 - **Canvas API** - Client-side image processing
+- **Sharp** - High-performance image processing for OG image generation
 
 ## 📖 How It Works
 
@@ -134,17 +139,26 @@ Composable providing image compression functionality using Canvas API.
 
 ## 🌐 Deployment
 
-This project is configured for deployment on Netlify:
+This project is configured for deployment on Netlify with Nuxt 4:
 
 ```bash
 # Build command
 yarn generate
 
 # Publish directory
-.output/public
+dist
 ```
 
-The `netlify.toml` file is pre-configured with optimal settings.
+The `netlify.toml` file is pre-configured with:
+- **Nitro preset**: `netlify-static` for optimal static site generation
+- **Output directory**: `dist` (Nuxt 4 custom configuration)
+- **Security headers**: X-Frame-Options, CSP, Referrer-Policy
+- **Cache headers**: 1-year cache for `/_nuxt/*` assets
+- **SPA fallback**: Client-side routing support
+
+### Environment Variables
+
+Set `NODE_VERSION=20` and `NITRO_PRESET=netlify-static` in your Netlify build settings (already configured in `netlify.toml`).
 
 ## 🤝 Contributing
 

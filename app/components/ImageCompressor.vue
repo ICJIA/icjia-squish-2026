@@ -14,7 +14,10 @@
             class="flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
             aria-label="View source on GitHub"
           >
-            <UIcon name="i-lucide-github" class="h-6 w-6" />
+            <UIcon
+              name="i-lucide-github"
+              class="h-6 w-6"
+            />
             <span class="hidden text-sm lg:inline">GitHub</span>
           </a>
         </div>
@@ -231,7 +234,10 @@
     <footer class="mt-16 border-t border-border">
       <div class="mx-auto max-w-[2000px] px-6 py-8 lg:px-10">
         <div class="flex flex-col items-center gap-4 text-center">
-          <p class="text-lg font-semibold tracking-wide" style="color: #45d87a;">
+          <p
+            class="text-lg font-semibold tracking-wide"
+            style="color: #45d87a;"
+          >
             Privacy-focused • Real-time preview • Instant compression
           </p>
           <p class="text-sm text-muted-foreground">
@@ -289,15 +295,30 @@ const processFiles = async (files: File[]) => {
   for (const file of files) {
     const id = crypto.randomUUID()
     const previewUrl = URL.createObjectURL(file)
-    const newImage: CompressedImage = { id, originalFile: file, originalSize: file.size, compressedBlob: null, compressedSize: file.size, previewUrl, compressedUrl: null }
+    const newImage: CompressedImage = {
+      id,
+      originalFile: file,
+      originalSize: file.size,
+      compressedBlob: null,
+      compressedSize: file.size,
+      previewUrl,
+      compressedUrl: null,
+    }
     images.value.push(newImage)
-    if (!selectedImageId.value) selectedImageId.value = id
+    if (!selectedImageId.value)
+      selectedImageId.value = id
     try {
       const { blob, url } = await compressImage(file, quality.value)
       const idx = images.value.findIndex(img => img.id === id)
-      if (idx !== -1) { images.value[idx].compressedBlob = blob; images.value[idx].compressedSize = blob.size; images.value[idx].compressedUrl = url }
+      if (idx !== -1) {
+        images.value[idx].compressedBlob = blob
+        images.value[idx].compressedSize = blob.size
+        images.value[idx].compressedUrl = url
+      }
     }
-    catch (error) { console.error('Compression failed:', error) }
+    catch (error) {
+      console.error('Compression failed:', error)
+    }
   }
   isCompressing.value = false
 }
@@ -305,12 +326,17 @@ const processFiles = async (files: File[]) => {
 const recompressAll = async () => {
   isCompressing.value = true
   for (const img of images.value) {
-    if (img.compressedUrl) URL.revokeObjectURL(img.compressedUrl)
+    if (img.compressedUrl)
+      URL.revokeObjectURL(img.compressedUrl)
     try {
       const { blob, url } = await compressImage(img.originalFile, quality.value)
-      img.compressedBlob = blob; img.compressedSize = blob.size; img.compressedUrl = url
+      img.compressedBlob = blob
+      img.compressedSize = blob.size
+      img.compressedUrl = url
     }
-    catch (error) { console.error('Recompression failed:', error) }
+    catch (error) {
+      console.error('Recompression failed:', error)
+    }
   }
   isCompressing.value = false
 }
@@ -325,19 +351,32 @@ const downloadImage = (img: CompressedImage) => {
 }
 
 const downloadAll = async () => {
-  for (const img of images.value) { if (img.compressedBlob) downloadImage(img) }
+  for (const img of images.value) {
+    if (img.compressedBlob)
+      downloadImage(img)
+  }
 }
 
 const removeImage = (id: string) => {
   const img = images.value.find(i => i.id === id)
-  if (img) { URL.revokeObjectURL(img.previewUrl); if (img.compressedUrl) URL.revokeObjectURL(img.compressedUrl) }
+  if (img) {
+    URL.revokeObjectURL(img.previewUrl)
+    if (img.compressedUrl)
+      URL.revokeObjectURL(img.compressedUrl)
+  }
   images.value = images.value.filter(i => i.id !== id)
-  if (selectedImageId.value === id) selectedImageId.value = images.value[0]?.id || null
+  if (selectedImageId.value === id)
+    selectedImageId.value = images.value[0]?.id || null
 }
 
 const clearAll = () => {
-  images.value.forEach((img) => { URL.revokeObjectURL(img.previewUrl); if (img.compressedUrl) URL.revokeObjectURL(img.compressedUrl) })
-  images.value = []; selectedImageId.value = null
+  images.value.forEach((img) => {
+    URL.revokeObjectURL(img.previewUrl)
+    if (img.compressedUrl)
+      URL.revokeObjectURL(img.compressedUrl)
+  })
+  images.value = []
+  selectedImageId.value = null
 }
 
 watch(quality, async () => {
@@ -349,7 +388,12 @@ watch(quality, async () => {
 }, { immediate: false })
 
 onUnmounted(() => {
-  images.value.forEach((img) => { URL.revokeObjectURL(img.previewUrl); if (img.compressedUrl) URL.revokeObjectURL(img.compressedUrl) })
-  if (debounceTimer) clearTimeout(debounceTimer)
+  images.value.forEach((img) => {
+    URL.revokeObjectURL(img.previewUrl)
+    if (img.compressedUrl)
+      URL.revokeObjectURL(img.compressedUrl)
+  })
+  if (debounceTimer)
+    clearTimeout(debounceTimer)
 })
 </script>
