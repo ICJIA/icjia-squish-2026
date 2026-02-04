@@ -4,12 +4,12 @@
 
 <script setup lang="ts">
 useSeoMeta({
-  title: "Squish - Image Compression for Writers",
+  title: "Squish - Image Compression for Writers and Designers",
   description:
-    "A simple, modern image compression tool for writers and authors. Drag and drop your images to compress them instantly.",
-  ogTitle: "Squish - Image Compression for Writers",
+    "Privacy-focused image compression tool for writers and designers. Compress images instantly in your browser with real-time preview comparison. No uploads required.",
+  ogTitle: "Squish - Image Compression for Writers and Designers",
   ogDescription:
-    "A simple, modern image compression tool for writers and authors. Drag and drop your images to compress them instantly.",
+    "Privacy-focused image compression tool for writers and designers. Compress images instantly in your browser with real-time preview comparison. No uploads required.",
   twitterCard: "summary_large_image",
 });
 </script>

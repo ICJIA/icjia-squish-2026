@@ -11,19 +11,19 @@ export default defineNuxtConfig({
   modules: ["@nuxt/ui", "@nuxt/icon"],
 
   // Static site generation for Netlify
-  ssr: true,
+  ssr: false,
 
   // App configuration
   app: {
     head: {
-      title: "Squish - Image Compression for Writers",
+      title: "Squish - Image Compression for Writers and Designers",
       meta: [
         { charset: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         {
           name: "description",
           content:
-            "A simple, modern image compression tool for writers and authors. Drag and drop your images to compress them instantly.",
+            "Privacy-focused image compression tool for writers and designers. Compress images instantly in your browser with real-time preview comparison. No uploads required.",
         },
         { name: "theme-color", content: "#0d0d0d" },
       ],
