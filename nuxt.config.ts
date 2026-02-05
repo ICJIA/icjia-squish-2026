@@ -10,27 +10,27 @@ export default defineNuxtConfig({
   // App configuration
   app: {
     head: {
-      title: 'Squish - Image Compression for Writers and Designers',
+      title: 'Squish - Image Compression for Writers & Designers',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         {
           name: 'description',
           content:
-            'Privacy-focused image compression tool for writers and designers. Compress images instantly in your browser with real-time preview comparison. No uploads required.',
+            'Privacy-focused image compression for writers and designers. Compress images instantly in your browser with real-time preview. No uploads required.',
         },
         { name: 'theme-color', content: '#0d0d0d' },
         // Open Graph
-        { property: 'og:title', content: 'Squish - Image Compression for Writers and Designers' },
-        { property: 'og:description', content: 'Privacy-focused image compression tool for writers and designers. Compress images instantly in your browser with real-time preview comparison. No uploads required.' },
+        { property: 'og:title', content: 'Squish - Image Compression for Writers & Designers' },
+        { property: 'og:description', content: 'Privacy-focused image compression for writers and designers. Compress images instantly in your browser with real-time preview. No uploads required.' },
         { property: 'og:image', content: 'https://squish.icjia.app/og-image.png' },
-        { property: 'og:url', content: 'https://squish.icjia.app' },
+        { property: 'og:url', content: 'https://squish.icjia.app/' },
         { property: 'og:type', content: 'website' },
         { property: 'og:site_name', content: 'Squish' },
         // Twitter
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: 'Squish - Image Compression for Writers and Designers' },
-        { name: 'twitter:description', content: 'Privacy-focused image compression tool. Compress images instantly in your browser with real-time preview comparison.' },
+        { name: 'twitter:title', content: 'Squish - Image Compression for Writers & Designers' },
+        { name: 'twitter:description', content: 'Privacy-focused image compression. Compress images instantly in your browser with real-time preview. No uploads required.' },
         { name: 'twitter:image', content: 'https://squish.icjia.app/og-image.png' },
       ],
       link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
@@ -48,9 +48,9 @@ export default defineNuxtConfig({
 
   // SEO Configuration
   site: {
-    url: 'https://squish.icjia.app',
+    url: 'https://squish.icjia.app/',
     name: 'Squish',
-    description: 'Privacy-focused image compression tool for writers and designers. Compress images instantly in your browser with real-time preview comparison.',
+    description: 'Privacy-focused image compression for writers and designers. Compress images instantly in your browser with real-time preview.',
     defaultLocale: 'en',
   },
 

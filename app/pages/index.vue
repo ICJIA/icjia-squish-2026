@@ -5,18 +5,18 @@
 <script setup lang="ts">
 // Use Nuxt SEO module's useSeoMeta with proper configuration
 useSeoMeta({
-  title: 'Squish - Image Compression for Writers and Designers',
-  description: 'Privacy-focused image compression tool for writers and designers. Compress images instantly in your browser with real-time preview comparison. No uploads required.',
-  ogTitle: 'Squish - Image Compression for Writers and Designers',
-  ogDescription: 'Privacy-focused image compression tool for writers and designers. Compress images instantly in your browser with real-time preview comparison. No uploads required.',
+  title: 'Squish - Image Compression for Writers & Designers',
+  description: 'Privacy-focused image compression for writers and designers. Compress images instantly in your browser with real-time preview. No uploads required.',
+  ogTitle: 'Squish - Image Compression for Writers & Designers',
+  ogDescription: 'Privacy-focused image compression for writers and designers. Compress images instantly in your browser with real-time preview. No uploads required.',
   ogImage: 'https://squish.icjia.app/og-image.png',
   ogImageAlt: 'Squish - Image compression for writers and designers',
-  ogUrl: 'https://squish.icjia.app',
+  ogUrl: 'https://squish.icjia.app/',
   ogType: 'website',
   ogSiteName: 'Squish',
   twitterCard: 'summary_large_image',
-  twitterTitle: 'Squish - Image Compression for Writers and Designers',
-  twitterDescription: 'Privacy-focused image compression tool. Compress images instantly in your browser with real-time preview comparison.',
+  twitterTitle: 'Squish - Image Compression for Writers & Designers',
+  twitterDescription: 'Privacy-focused image compression. Compress images instantly in your browser with real-time preview. No uploads required.',
   twitterImage: 'https://squish.icjia.app/og-image.png',
   twitterImageAlt: 'Squish - Image compression for writers and designers',
 })
@@ -26,8 +26,8 @@ useSchemaOrg([
   {
     '@type': 'WebApplication',
     'name': 'Squish',
-    'description': 'Privacy-focused image compression tool for writers and designers',
-    'url': 'https://squish.icjia.app',
+    'description': 'Privacy-focused image compression for writers and designers',
+    'url': 'https://squish.icjia.app/',
     'applicationCategory': 'UtilityApplication',
     'operatingSystem': 'Any',
     'offers': {
