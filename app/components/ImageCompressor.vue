@@ -79,11 +79,13 @@
               </button>
             </div>
             <ComparisonSlider
-              :key="`${selectedImage.id}-${selectedImage.compressedUrl}`"
+              :key="selectedImage.id"
               :original-url="selectedImage.previewUrl"
               :compressed-url="selectedImage.compressedUrl"
               :original-size="selectedImage.originalSize"
               :compressed-size="selectedImage.compressedSize"
+              :quality="quality"
+              @update:quality="quality = $event"
             />
           </div>
           <div
