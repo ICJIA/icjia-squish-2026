@@ -11,6 +11,8 @@
 
 A modern, privacy-focused image compression tool built with Nuxt 4. Squish helps writers and designers optimize their images with a beautiful, interactive preview comparison slider and real-time quality adjustments.
 
+![Squish Open Graph Image](public/og-image.png)
+
 ![Squish Screenshot](documentation/screenshot.jpg)
 
 ## ✨ Features
