@@ -52,6 +52,7 @@ export default defineNuxtConfig({
     name: 'Squish',
     description: 'Privacy-focused image compression for writers and designers. Compress images instantly in your browser with real-time preview.',
     defaultLocale: 'en',
+    indexable: true,
   },
 
   // Enable Nuxt 4 behavior

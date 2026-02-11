@@ -159,20 +159,24 @@
         <div class="space-y-8">
           <div class="space-y-6 rounded border border-border bg-card p-6">
             <div class="flex items-baseline justify-between">
-              <h3 class="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+              <h2 id="quality-heading" class="text-sm font-medium uppercase tracking-widest text-muted-foreground">
                 Quality
-              </h3>
+              </h2>
               <span class="text-4xl font-black tabular-nums text-primary">{{ quality }}%</span>
             </div>
-            <USlider
-              v-model="quality"
-              :min="10"
-              :max="100"
-              :step="5"
-              color="primary"
-              size="lg"
-              class="w-full"
-            />
+            <div ref="qualitySliderContainer">
+              <USlider
+                v-model="quality"
+                :min="10"
+                :max="100"
+                :step="5"
+                color="primary"
+                size="lg"
+                class="w-full"
+                aria-labelledby="quality-heading"
+                aria-label="Image compression quality"
+              />
+            </div>
             <div class="flex justify-between text-xs text-muted-foreground">
               <span>Smaller file</span>
               <span>Better quality</span>
@@ -186,9 +190,9 @@
             v-if="images.length > 0"
             class="space-y-6 rounded border border-border bg-card p-6"
           >
-            <h3 class="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+            <h2 class="text-sm font-medium uppercase tracking-widest text-muted-foreground">
               Summary
-            </h3>
+            </h2>
             <div class="space-y-4">
               <div class="flex justify-between">
                 <span class="text-muted-foreground">Original</span>
@@ -261,6 +265,7 @@ const quality = ref(75)
 const isDragging = ref(false)
 const selectedImageId = ref<string | null>(null)
 const isCompressing = ref(false)
+const qualitySliderContainer = ref<HTMLElement | null>(null)
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -268,6 +273,15 @@ const selectedImage = computed(() => images.value.find(img => img.id === selecte
 const totalOriginalSize = computed(() => images.value.reduce((sum, img) => sum + img.originalSize, 0))
 const totalCompressedSize = computed(() => images.value.reduce((sum, img) => sum + img.compressedSize, 0))
 const totalSavings = computed(() => getSavings(totalOriginalSize.value, totalCompressedSize.value))
+
+const ensureSliderThumbHasName = () => {
+  const container = qualitySliderContainer.value
+  if (!container) return
+  const thumb = container.querySelector('[role="slider"]')
+  if (thumb) {
+    thumb.setAttribute('aria-label', 'Image compression quality')
+  }
+}
 
 const handleDragOver = (e: DragEvent) => {
   e.preventDefault()
@@ -388,6 +402,16 @@ watch(quality, async () => {
     await recompressAll()
   }, 150)
 }, { immediate: false })
+
+onMounted(async () => {
+  await nextTick()
+  ensureSliderThumbHasName()
+})
+
+watch(quality, async () => {
+  await nextTick()
+  ensureSliderThumbHasName()
+})
 
 onUnmounted(() => {
   images.value.forEach((img) => {

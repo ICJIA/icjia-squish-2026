@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-lg border border-border bg-card/50 p-4">
     <div class="flex items-center justify-between">
-      <span :class="`text-sm font-semibold ${assessment.color}`">
+      <span :class="`text-sm font-semibold ${assessment.color}`" :style="assessment.style">
         {{ assessment.label }}
       </span>
       <span
@@ -29,6 +29,7 @@ const assessment = computed(() => {
       label: 'Excellent',
       description: 'Virtually no visible quality loss. Best for print or high-detail images.',
       color: 'text-primary',
+      style: 'color: #00e64d;', // Brighter green for WCAG AA contrast (4.5:1 on dark bg)
     }
   }
   if (props.quality >= 70) {
@@ -36,6 +37,7 @@ const assessment = computed(() => {
       label: 'Recommended',
       description: 'Optimal balance of quality and file size. Perfect for web and blogs.',
       color: 'text-primary',
+      style: 'color: #00e64d;', // Brighter green for WCAG AA contrast (4.5:1 on dark bg)
     }
   }
   if (props.quality >= 50) {
@@ -43,12 +45,14 @@ const assessment = computed(() => {
       label: 'Good',
       description: 'Noticeable compression on close inspection. Good for thumbnails or previews.',
       color: 'text-yellow-400',
+      style: '',
     }
   }
   return {
     label: 'Aggressive',
     description: 'Visible artifacts likely. Use only when file size is critical.',
     color: 'text-orange-400',
+    style: '',
   }
 })
 </script>

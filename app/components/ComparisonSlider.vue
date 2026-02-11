@@ -10,6 +10,7 @@
             <button
               class="rounded-md bg-primary/10 px-3 py-1 text-sm font-medium text-primary transition-colors hover:bg-primary/20 disabled:opacity-50"
               :disabled="zoom === 100"
+              aria-label="Reset zoom to 100%"
               @click="resetZoom"
             >
               Reset
@@ -17,17 +18,19 @@
             <button
               class="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary transition-colors hover:bg-primary/20 disabled:opacity-50"
               :disabled="zoom >= 800"
+              aria-label="Zoom in"
               @click="zoomIn"
             >
-              <UIcon name="i-lucide-zoom-in" class="h-4 w-4" />
+              <UIcon name="i-lucide-zoom-in" class="h-4 w-4" aria-hidden="true" />
             </button>
             <span class="min-w-[3.5rem] text-center text-sm font-bold text-primary tabular-nums">{{ zoom }}%</span>
             <button
               class="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary transition-colors hover:bg-primary/20 disabled:opacity-50"
               :disabled="zoom <= 100"
+              aria-label="Zoom out"
               @click="zoomOut"
             >
-              <UIcon name="i-lucide-zoom-out" class="h-4 w-4" />
+              <UIcon name="i-lucide-zoom-out" class="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -39,10 +42,10 @@
       <!-- Quality Slider Row -->
       <div class="flex items-center gap-4">
         <div class="flex items-center gap-3">
-          <span class="text-sm font-medium text-muted-foreground">Quality:</span>
+          <span id="preview-quality-label" class="text-sm font-medium text-muted-foreground">Quality:</span>
           <span class="min-w-[3.5rem] text-center text-sm font-bold text-primary tabular-nums">{{ localQuality }}%</span>
         </div>
-        <div class="flex-1">
+        <div ref="previewQualitySliderContainer" class="flex-1">
           <USlider
             v-model="localQuality"
             :min="10"
@@ -51,6 +54,8 @@
             color="primary"
             size="md"
             class="w-full"
+            aria-labelledby="preview-quality-label"
+            aria-label="Image compression quality"
           />
         </div>
         <div class="flex gap-2 text-[10px] text-muted-foreground">
@@ -150,6 +155,7 @@ const { formatSize } = useImageCompression()
 const position = ref(50)
 const containerRef = ref<HTMLDivElement | null>(null)
 const isDraggingSlider = ref(false)
+const previewQualitySliderContainer = ref<HTMLElement | null>(null)
 
 // Quality state (local copy synced with parent)
 const localQuality = ref(props.quality)
@@ -167,6 +173,15 @@ const imageTransformStyle = computed(() => ({
   transformOrigin: 'center center',
   willChange: 'transform',
 }))
+
+const ensurePreviewSliderThumbHasName = () => {
+  const container = previewQualitySliderContainer.value
+  if (!container) return
+  const thumb = container.querySelector('[role="slider"]')
+  if (thumb) {
+    thumb.setAttribute('aria-label', 'Image compression quality')
+  }
+}
 
 
 // Zoom controls
@@ -288,5 +303,15 @@ watch(() => props.quality, (newQuality) => {
 // Emit quality changes to parent
 watch(localQuality, (newQuality) => {
   emit('update:quality', newQuality)
+})
+
+onMounted(async () => {
+  await nextTick()
+  ensurePreviewSliderThumbHasName()
+})
+
+watch(localQuality, async () => {
+  await nextTick()
+  ensurePreviewSliderThumbHasName()
 })
 </script>
