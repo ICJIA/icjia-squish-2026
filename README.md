@@ -19,6 +19,7 @@ A modern, privacy-focused image compression tool built with Nuxt 4. Squish helps
 
 - **🔒 Privacy First**: All processing happens locally in your browser - your images never leave your device
 - **👁️ Live Preview Comparison**: Interactive side-by-side slider to compare original vs compressed images
+- **🔍 Zoom & Pan**: Magnify up to 800% with click-and-drag panning for pixel-level inspection
 - **⚡ Real-time Updates**: See compression effects instantly as you adjust quality settings
 - **📏 Large Preview Window**: Optimized for wide screens with up to 2000px layout for detailed inspection
 - **🎨 Modern UI**: Dark theme with clean, intuitive interface using Nuxt UI components
@@ -31,7 +32,7 @@ A modern, privacy-focused image compression tool built with Nuxt 4. Squish helps
 
 ### Prerequisites
 
-- Node.js 20+ (see `.nvmrc` for exact version)
+- Node.js 22+ (see `.nvmrc` for exact version)
 - yarn or npm
 
 > **Note**: This is a **Nuxt 4** application. Make sure you're using compatible tooling.
@@ -74,7 +75,7 @@ yarn build
 - **[TypeScript](https://www.typescriptlang.org/)** - Type-safe JavaScript
 - **[Tailwind CSS v4](https://tailwindcss.com/)** - Utility-first CSS framework
 - **Canvas API** - Client-side image processing
-- **Sharp** - High-performance image processing for OG image generation
+- **[Vitest](https://vitest.dev/)** - Unit testing framework with coverage reporting
 
 ## 📖 How It Works
 
@@ -86,17 +87,19 @@ yarn build
 ### Compression Process
 
 - Images are processed using the HTML5 Canvas API
-- Converts to JPEG format with adjustable quality
+- Preserves original format (PNG, JPEG, WebP) with adjustable quality
 - Original images remain untouched - new compressed versions are created
 - All processing happens client-side for maximum privacy
 
 ## 🎨 UI Features
 
 ### Preview Comparison Window
-- **Large viewing area**: Up to 1630px width on wide screens
+- **Large viewing area**: Up to 2000px layout width on wide screens
 - **3:2 aspect ratio**: Optimal for most images
 - **Min height**: 700px for comfortable viewing
 - **Interactive slider**: Smooth drag-to-compare experience
+- **Zoom controls**: Zoom in/out (100%–800%) with reset button
+- **Pan mode**: Click and drag to pan when zoomed above 100%
 
 ### Quality Control
 - **Visual slider**: Clear track with current value display
@@ -104,16 +107,50 @@ yarn build
 - **Real-time stats**: See file size savings instantly
 - **Smart defaults**: Starts at 75% quality for optimal balance
 
+## 🧪 Testing
+
+The project includes a comprehensive unit test suite with 99 tests covering components and composables.
+
+```bash
+# Run all tests
+yarn test
+
+# Run tests in watch mode
+yarn test:watch
+
+# Run with coverage report
+yarn test:coverage
+
+# Run component tests only
+yarn test:components
+
+# Run composable tests only
+yarn test:composables
+
+# Open Vitest UI
+yarn test:ui
+```
+
+### Test Coverage
+
+| File | Statements | Branches | Functions | Lines |
+|------|-----------|----------|-----------|-------|
+| useImageCompression.ts | 100% | 100% | 100% | 100% |
+| QualityIndicator.vue | 100% | 100% | 100% | 100% |
+| ComparisonSlider.vue | ~79% | 85% | ~60% | ~79% |
+| ImageCompressor.vue | ~83% | ~91% | ~25% | ~83% |
+
+Tests use **Vitest** with **happy-dom**, **Vue Test Utils**, and **vitest-canvas-mock** for Canvas API simulation.
+
 ## 📁 Project Structure
 
 ```
 icjia-squish-2026/
 ├── app/
-│   ├── assets/
-│   │   └── css/
-│   │       └── main.css          # Global styles and theme
+│   ├── assets/css/
+│   │   └── main.css              # Global styles and theme
 │   ├── components/
-│   │   ├── ComparisonSlider.vue  # Interactive image comparison
+│   │   ├── ComparisonSlider.vue  # Interactive image comparison with zoom/pan
 │   │   ├── ImageCompressor.vue   # Main app component
 │   │   └── QualityIndicator.vue  # Quality recommendations
 │   ├── composables/
@@ -122,8 +159,16 @@ icjia-squish-2026/
 │   │   └── index.vue             # Home page
 │   ├── app.config.ts             # App configuration
 │   └── app.vue                   # Root component
+├── test/
+│   ├── unit/
+│   │   ├── components/           # Component tests (69 tests)
+│   │   └── composables/          # Composable tests (30 tests)
+│   ├── fixtures/                 # Mock files and test data
+│   ├── helpers/                  # Test utilities and canvas mocks
+│   └── setup.ts                  # Global test setup
 ├── documentation/                # Original Next.js reference code
 ├── nuxt.config.ts               # Nuxt configuration
+├── vitest.config.ts             # Test configuration
 ├── package.json                 # Dependencies
 └── netlify.toml                 # Netlify deployment config
 ```
@@ -134,7 +179,7 @@ icjia-squish-2026/
 Main component handling image upload, compression, and state management.
 
 ### `ComparisonSlider.vue`
-Interactive slider for comparing original and compressed images side-by-side.
+Interactive slider for comparing original and compressed images side-by-side with zoom (100%–800%) and pan controls.
 
 ### `useImageCompression.ts`
 Composable providing image compression functionality using Canvas API.
@@ -159,7 +204,7 @@ The `netlify.toml` file is pre-configured with:
 
 ### Environment Variables
 
-Set `NODE_VERSION=20` and `NITRO_PRESET=netlify-static` in your Netlify build settings (already configured in `netlify.toml`).
+Set `NODE_VERSION=22` and `NITRO_PRESET=netlify-static` in your Netlify build settings (already configured in `netlify.toml`).
 
 ## 🤝 Contributing
 
