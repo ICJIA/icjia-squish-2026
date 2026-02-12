@@ -178,8 +178,6 @@
                 color="primary"
                 size="lg"
                 class="w-full"
-                aria-labelledby="quality-heading"
-                aria-label="Image compression quality"
               />
             </div>
             <div class="flex justify-between text-xs text-muted-foreground">
@@ -261,7 +259,7 @@
         <div class="flex flex-col items-center gap-4 text-center">
           <p
             class="text-lg font-semibold tracking-wide"
-            style="color: #45d87a;"
+            style="color: #4ade80;"
           >
             Privacy-focused • Real-time preview • Instant compression
           </p>

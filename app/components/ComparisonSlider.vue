@@ -71,8 +71,6 @@
             color="primary"
             size="md"
             class="w-full"
-            aria-labelledby="preview-quality-label"
-            aria-label="Image compression quality"
           />
         </div>
         <div class="flex gap-2 text-[10px] text-muted-foreground">

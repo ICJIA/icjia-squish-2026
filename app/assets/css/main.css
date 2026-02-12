@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Force dark background so crawlers/accessibility tools never see white */
+html, body {
+  background-color: #222 !important;
+  color: #f0f0f0 !important;
+}
+
 @theme {
   --color-background: oklch(0.15 0 0);
   --color-foreground: oklch(0.96 0 0);

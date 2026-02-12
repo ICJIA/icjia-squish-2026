@@ -32,7 +32,7 @@ const assessment = computed(() => {
       label: 'Excellent',
       description: 'Virtually no visible quality loss. Best for print or high-detail images.',
       color: 'text-primary',
-      style: 'color: #00e64d;', // Brighter green for WCAG AA contrast (4.5:1 on dark bg)
+      style: 'color: #4ade80;', // green-400 for high contrast on dark bg (~7:1 ratio)
     }
   }
   if (props.quality >= 70) {
@@ -40,7 +40,7 @@ const assessment = computed(() => {
       label: 'Recommended',
       description: 'Optimal balance of quality and file size. Perfect for web and blogs.',
       color: 'text-primary',
-      style: 'color: #00e64d;', // Brighter green for WCAG AA contrast (4.5:1 on dark bg)
+      style: 'color: #4ade80;', // green-400 for high contrast on dark bg (~7:1 ratio)
     }
   }
   if (props.quality >= 50) {

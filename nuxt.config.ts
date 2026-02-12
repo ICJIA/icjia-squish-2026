@@ -3,6 +3,14 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/ui', '@nuxt/icon', '@nuxtjs/seo'],
 
+  // Force dark-only — no light/dark toggle exists
+  colorMode: {
+    preference: 'dark',
+    fallback: 'dark',
+    classSuffix: '',
+    storageKey: 'nuxt-color-mode',
+  },
+
   // Static site generation for Netlify with SSR for SEO
   ssr: true,
   devtools: { enabled: true },
@@ -34,6 +42,8 @@ export default defineNuxtConfig({
         { name: 'twitter:image', content: 'https://squish.icjia.app/og-image.png' },
       ],
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      script: [{ innerHTML: 'document.documentElement.classList.add("dark")', tagPosition: 'head' }],
+      htmlAttrs: { class: 'dark' },
     },
   },
 
