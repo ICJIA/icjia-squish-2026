@@ -33,7 +33,7 @@ export default defineNuxtConfig({
         { name: 'twitter:description', content: 'Privacy-focused image compression. Compress images instantly in your browser with real-time preview. No uploads required.' },
         { name: 'twitter:image', content: 'https://squish.icjia.app/og-image.png' },
       ],
-      link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     },
   },
 

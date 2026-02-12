@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#0d0d0d"/>
+  <g transform="translate(16,16)">
+    <!-- Top arrow pointing down -->
+    <path d="M0,-11 L5,-6 L2,-6 L2,-3 L-2,-3 L-2,-6 L-5,-6 Z" fill="#00DC82"/>
+    <!-- Bottom arrow pointing up -->
+    <path d="M0,11 L5,6 L2,6 L2,3 L-2,3 L-2,6 L-5,6 Z" fill="#00DC82"/>
+    <!-- Compressed line in middle -->
+    <rect x="-6" y="-1" width="12" height="2" rx="1" fill="#00DC82" opacity="0.7"/>
+  </g>
+</svg>
