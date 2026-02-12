@@ -1,7 +1,10 @@
 <template>
   <div class="rounded-lg border border-border bg-card/50 p-4">
     <div class="flex items-center justify-between">
-      <span :class="`text-sm font-semibold ${assessment.color}`" :style="assessment.style">
+      <span
+        :class="`text-sm font-semibold ${assessment.color}`"
+        :style="assessment.style"
+      >
         {{ assessment.label }}
       </span>
       <span

@@ -21,7 +21,11 @@
               aria-label="Zoom in"
               @click="zoomIn"
             >
-              <UIcon name="i-lucide-zoom-in" class="h-4 w-4" aria-hidden="true" />
+              <UIcon
+                name="i-lucide-zoom-in"
+                class="h-4 w-4"
+                aria-hidden="true"
+              />
             </button>
             <span class="min-w-[3.5rem] text-center text-sm font-bold text-primary tabular-nums">{{ zoom }}%</span>
             <button
@@ -30,22 +34,35 @@
               aria-label="Zoom out"
               @click="zoomOut"
             >
-              <UIcon name="i-lucide-zoom-out" class="h-4 w-4" aria-hidden="true" />
+              <UIcon
+                name="i-lucide-zoom-out"
+                class="h-4 w-4"
+                aria-hidden="true"
+              />
             </button>
           </div>
         </div>
-        <div v-if="zoom > 100" class="text-xs text-muted-foreground">
+        <div
+          v-if="zoom > 100"
+          class="text-xs text-muted-foreground"
+        >
           Click and drag to pan
         </div>
       </div>
-      
+
       <!-- Quality Slider Row -->
       <div class="flex items-center gap-4">
         <div class="flex items-center gap-3">
-          <span id="preview-quality-label" class="text-sm font-medium text-muted-foreground">Quality:</span>
+          <span
+            id="preview-quality-label"
+            class="text-sm font-medium text-muted-foreground"
+          >Quality:</span>
           <span class="min-w-[3.5rem] text-center text-sm font-bold text-primary tabular-nums">{{ localQuality }}%</span>
         </div>
-        <div ref="previewQualitySliderContainer" class="flex-1">
+        <div
+          ref="previewQualitySliderContainer"
+          class="flex-1"
+        >
           <USlider
             v-model="localQuality"
             :min="10"
@@ -183,7 +200,6 @@ const ensurePreviewSliderThumbHasName = () => {
   }
 }
 
-
 // Zoom controls
 const zoomIn = () => {
   zoom.value = Math.min(800, zoom.value + 50)
@@ -192,7 +208,8 @@ const zoomIn = () => {
 const zoomOut = () => {
   if (zoom.value <= 100) {
     resetZoom()
-  } else {
+  }
+  else {
     zoom.value = Math.max(100, zoom.value - 50)
   }
 }
@@ -229,15 +246,15 @@ const startPan = (clientX: number, clientY: number) => {
 
 const handlePanMove = (clientX: number, clientY: number) => {
   if (!isPanning.value || zoom.value <= 100) return
-  
+
   const deltaX = clientX - lastPanPosition.value.x
   const deltaY = clientY - lastPanPosition.value.y
-  
+
   // Scale the delta by zoom level for more natural panning
   const scaleFactor = zoom.value / 100
   panX.value += deltaX / scaleFactor
   panY.value += deltaY / scaleFactor
-  
+
   lastPanPosition.value = { x: clientX, y: clientY }
 }
 
@@ -255,7 +272,8 @@ const handleMouseDown = (e: MouseEvent) => {
 const handleMouseMove = (e: MouseEvent) => {
   if (isDraggingSlider.value) {
     handleSliderMove(e.clientX)
-  } else if (isPanning.value) {
+  }
+  else if (isPanning.value) {
     handlePanMove(e.clientX, e.clientY)
   }
 }
@@ -274,10 +292,11 @@ const handleTouchStart = (e: TouchEvent) => {
 
 const handleTouchMove = (e: TouchEvent) => {
   if (!e.touches[0]) return
-  
+
   if (isDraggingSlider.value) {
     handleSliderMove(e.touches[0].clientX)
-  } else if (isPanning.value) {
+  }
+  else if (isPanning.value) {
     handlePanMove(e.touches[0].clientX, e.touches[0].clientY)
   }
 }

@@ -39,7 +39,7 @@
           >
             <input
               type="file"
-              accept="image/png,image/jpeg,image/jpg"
+              accept="image/png,image/jpeg,image/jpg,image/webp"
               multiple
               class="absolute inset-0 cursor-pointer opacity-0"
               aria-label="Select images to compress"
@@ -55,7 +55,7 @@
                   {{ isDragging ? 'Release to squish' : 'Drop images here' }}
                 </p>
                 <p class="mt-1 text-sm text-muted-foreground">
-                  or click to browse — PNG and JPG supported
+                  or click to browse — PNG, JPG, and WebP supported
                 </p>
               </div>
             </div>
@@ -111,6 +111,8 @@
                 role="button"
                 tabindex="0"
                 @click="selectedImageId = img.id"
+                @keydown.enter="selectedImageId = img.id"
+                @keydown.space.prevent="selectedImageId = img.id"
               >
                 <div class="aspect-square bg-muted">
                   <img
@@ -159,7 +161,10 @@
         <div class="space-y-8">
           <div class="space-y-6 rounded border border-border bg-card p-6">
             <div class="flex items-baseline justify-between">
-              <h2 id="quality-heading" class="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+              <h2
+                id="quality-heading"
+                class="text-sm font-medium uppercase tracking-widest text-muted-foreground"
+              >
                 Quality
               </h2>
               <span class="text-4xl font-black tabular-nums text-primary">{{ quality }}%</span>
@@ -234,6 +239,20 @@
             <div class="h-5 w-5 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-primary" />
             <span class="text-sm text-muted-foreground">Compressing...</span>
           </div>
+          <div
+            v-if="errorMessage"
+            class="rounded border border-destructive bg-destructive/10 p-4"
+          >
+            <div class="flex items-start gap-3">
+              <UIcon
+                name="i-lucide-alert-circle"
+                class="mt-0.5 h-5 w-5 shrink-0 text-destructive"
+              />
+              <p class="text-sm text-destructive">
+                {{ errorMessage }}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -258,7 +277,7 @@
 <script setup lang="ts">
 import type { CompressedImage } from '~/composables/useImageCompression'
 
-const { compressImage, formatSize, getSavings } = useImageCompression()
+const { compressImage, formatSize, getSavings, getFileExtension } = useImageCompression()
 
 const images = ref<CompressedImage[]>([])
 const quality = ref(75)
@@ -266,6 +285,7 @@ const isDragging = ref(false)
 const selectedImageId = ref<string | null>(null)
 const isCompressing = ref(false)
 const qualitySliderContainer = ref<HTMLElement | null>(null)
+const errorMessage = ref<string | null>(null)
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -319,21 +339,30 @@ const processFiles = async (files: File[]) => {
       compressedSize: file.size,
       previewUrl,
       compressedUrl: null,
+      outputFormat: 'image/jpeg',
     }
     images.value.push(newImage)
     if (!selectedImageId.value)
       selectedImageId.value = id
     try {
-      const { blob, url } = await compressImage(file, quality.value)
+      const { blob, url, format } = await compressImage(file, quality.value)
       const idx = images.value.findIndex(img => img.id === id)
       if (idx !== -1) {
-        images.value[idx].compressedBlob = blob
-        images.value[idx].compressedSize = blob.size
-        images.value[idx].compressedUrl = url
+        const image = images.value[idx]
+        if (image) {
+          image.compressedBlob = blob
+          image.compressedSize = blob.size
+          image.compressedUrl = url
+          image.outputFormat = format
+        }
       }
     }
     catch (error) {
       console.error('Compression failed:', error)
+      errorMessage.value = `Failed to compress ${file.name}. Please try again.`
+      setTimeout(() => {
+        errorMessage.value = null
+      }, 5000)
     }
   }
   isCompressing.value = false
@@ -345,13 +374,18 @@ const recompressAll = async () => {
     if (img.compressedUrl)
       URL.revokeObjectURL(img.compressedUrl)
     try {
-      const { blob, url } = await compressImage(img.originalFile, quality.value)
+      const { blob, url, format } = await compressImage(img.originalFile, quality.value)
       img.compressedBlob = blob
       img.compressedSize = blob.size
       img.compressedUrl = url
+      img.outputFormat = format
     }
     catch (error) {
       console.error('Recompression failed:', error)
+      errorMessage.value = 'Failed to recompress images. Please try again.'
+      setTimeout(() => {
+        errorMessage.value = null
+      }, 5000)
     }
   }
   isCompressing.value = false
@@ -360,10 +394,13 @@ const recompressAll = async () => {
 const downloadImage = (img: CompressedImage) => {
   if (!img.compressedBlob) return
   const a = document.createElement('a')
-  a.href = URL.createObjectURL(img.compressedBlob)
-  a.download = img.originalFile.name.replace(/\.[^.]+$/, '') + '_compressed.jpg'
+  const url = URL.createObjectURL(img.compressedBlob)
+  const extension = getFileExtension(img.outputFormat)
+  a.href = url
+  a.download = img.originalFile.name.replace(/\.[^.]+$/, '') + `_compressed.${extension}`
   a.click()
-  URL.revokeObjectURL(a.href)
+  // Delay revocation to ensure download initiates
+  setTimeout(() => URL.revokeObjectURL(url), 100)
 }
 
 const downloadAll = async () => {
@@ -396,6 +433,11 @@ const clearAll = () => {
 }
 
 watch(quality, async () => {
+  // Ensure slider accessibility
+  await nextTick()
+  ensureSliderThumbHasName()
+
+  // Debounced recompression
   if (images.value.length === 0) return
   if (debounceTimer) clearTimeout(debounceTimer)
   debounceTimer = setTimeout(async () => {
@@ -404,11 +446,6 @@ watch(quality, async () => {
 }, { immediate: false })
 
 onMounted(async () => {
-  await nextTick()
-  ensureSliderThumbHasName()
-})
-
-watch(quality, async () => {
   await nextTick()
   ensureSliderThumbHasName()
 })
