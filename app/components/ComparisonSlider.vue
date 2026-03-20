@@ -42,11 +42,8 @@
             </button>
           </div>
         </div>
-        <div
-          v-if="zoom > 100"
-          class="text-xs text-muted-foreground"
-        >
-          Click and drag to pan
+        <div class="text-xs text-muted-foreground">
+          <span v-if="zoom > 100">Drag to pan · </span>Scroll to zoom
         </div>
       </div>
 
@@ -65,9 +62,9 @@
         >
           <USlider
             v-model="localQuality"
-            :min="10"
-            :max="100"
-            :step="5"
+            :min="QUALITY_MIN"
+            :max="QUALITY_MAX"
+            :step="QUALITY_STEP"
             color="primary"
             size="md"
             class="w-full"
@@ -88,9 +85,7 @@
       :class="zoom > 100 ? 'cursor-grab active:cursor-grabbing' : 'cursor-ew-resize'"
       style="aspect-ratio: 3/2; min-height: 700px; max-height: 900px;"
       @mousedown="handleMouseDown"
-      @mousemove="handleMouseMove"
-      @mouseup="handleMouseUp"
-      @mouseleave="handleMouseUp"
+      @wheel.prevent="handleWheel"
       @touchstart="handleTouchStart"
       @touchmove="handleTouchMove"
       @touchend="handleTouchEnd"
@@ -152,12 +147,15 @@
 </template>
 
 <script setup lang="ts">
+import { QUALITY_MIN, QUALITY_MAX, QUALITY_STEP } from '~/utils/constants'
+
 const props = defineProps<{
   originalUrl: string
   compressedUrl: string
   originalSize: number
   compressedSize: number
   quality: number
+  defaultZoom?: number
 }>()
 
 const emit = defineEmits<{
@@ -176,7 +174,7 @@ const previewQualitySliderContainer = ref<HTMLElement | null>(null)
 const localQuality = ref(props.quality)
 
 // Zoom and pan state
-const zoom = ref(100)
+const zoom = ref(props.defaultZoom ?? 100)
 const panX = ref(0)
 const panY = ref(0)
 const isPanning = ref(false)
@@ -218,6 +216,16 @@ const resetZoom = () => {
   panY.value = 0
 }
 
+const handleWheel = (e: WheelEvent) => {
+  const delta = e.deltaY < 0 ? 50 : -50
+  const newZoom = Math.max(100, Math.min(800, zoom.value + delta))
+  if (newZoom === 100) {
+    panX.value = 0
+    panY.value = 0
+  }
+  zoom.value = newZoom
+}
+
 // Slider movement
 const handleSliderMove = (clientX: number) => {
   if (!containerRef.value) return
@@ -227,58 +235,49 @@ const handleSliderMove = (clientX: number) => {
   position.value = percentage
 }
 
+// Window-level move/up handlers so dragging works even when cursor leaves the container
+const onWindowMouseMove = (e: MouseEvent) => {
+  if (isDraggingSlider.value) {
+    handleSliderMove(e.clientX)
+  }
+  else if (isPanning.value) {
+    const deltaX = e.clientX - lastPanPosition.value.x
+    const deltaY = e.clientY - lastPanPosition.value.y
+    const scaleFactor = zoom.value / 100
+    panX.value += deltaX / scaleFactor
+    panY.value += deltaY / scaleFactor
+    lastPanPosition.value = { x: e.clientX, y: e.clientY }
+  }
+}
+
+const onWindowMouseUp = () => {
+  isDraggingSlider.value = false
+  isPanning.value = false
+  window.removeEventListener('mousemove', onWindowMouseMove)
+  window.removeEventListener('mouseup', onWindowMouseUp)
+}
+
+const startWindowListeners = () => {
+  window.addEventListener('mousemove', onWindowMouseMove)
+  window.addEventListener('mouseup', onWindowMouseUp)
+}
+
 const handleSliderMouseDown = () => {
   isDraggingSlider.value = true
+  startWindowListeners()
 }
 
 const handleSliderTouchStart = () => {
   isDraggingSlider.value = true
 }
 
-// Pan movement
-const startPan = (clientX: number, clientY: number) => {
-  if (zoom.value <= 100) return
-  isPanning.value = true
-  lastPanPosition.value = { x: clientX, y: clientY }
-}
-
-const handlePanMove = (clientX: number, clientY: number) => {
-  if (!isPanning.value || zoom.value <= 100) return
-
-  const deltaX = clientX - lastPanPosition.value.x
-  const deltaY = clientY - lastPanPosition.value.y
-
-  // Scale the delta by zoom level for more natural panning
-  const scaleFactor = zoom.value / 100
-  panX.value += deltaX / scaleFactor
-  panY.value += deltaY / scaleFactor
-
-  lastPanPosition.value = { x: clientX, y: clientY }
-}
-
-const stopPan = () => {
-  isPanning.value = false
-}
-
-// Unified mouse handlers
+// Unified mouse handler for container mousedown
 const handleMouseDown = (e: MouseEvent) => {
   if (zoom.value > 100) {
-    startPan(e.clientX, e.clientY)
+    isPanning.value = true
+    lastPanPosition.value = { x: e.clientX, y: e.clientY }
+    startWindowListeners()
   }
-}
-
-const handleMouseMove = (e: MouseEvent) => {
-  if (isDraggingSlider.value) {
-    handleSliderMove(e.clientX)
-  }
-  else if (isPanning.value) {
-    handlePanMove(e.clientX, e.clientY)
-  }
-}
-
-const handleMouseUp = () => {
-  isDraggingSlider.value = false
-  stopPan()
 }
 
 // Touch handlers
@@ -330,5 +329,10 @@ onMounted(async () => {
 watch(localQuality, async () => {
   await nextTick()
   ensurePreviewSliderThumbHasName()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('mousemove', onWindowMouseMove)
+  window.removeEventListener('mouseup', onWindowMouseUp)
 })
 </script>

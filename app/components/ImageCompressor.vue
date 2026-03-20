@@ -58,7 +58,29 @@
                   or click to browse — PNG, JPG, and WebP supported
                 </p>
               </div>
+              <button
+                v-if="!isSampleImage && !isSampleLoading"
+                class="relative z-10 mt-2 rounded border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/20"
+                @click.stop.prevent="loadSampleImage"
+              >
+                Load Sample Image
+              </button>
+              <div
+                v-if="isSampleLoading"
+                class="mt-2 flex items-center gap-2"
+              >
+                <div class="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-primary" />
+                <span class="text-sm text-muted-foreground">Loading sample...</span>
+              </div>
             </div>
+          </div>
+          <div
+            v-if="isSampleImage && selectedImage"
+            class="flex items-center justify-between rounded border border-primary/30 bg-primary/5 px-4 py-3"
+          >
+            <p class="text-sm text-muted-foreground">
+              This is a <span class="font-medium text-primary">sample image</span> — drag and drop your own image to see the impact on your files.
+            </p>
           </div>
           <div
             v-if="selectedImage && selectedImage.compressedUrl"
@@ -71,12 +93,33 @@
                 </h2>
                 <span class="text-sm text-muted-foreground">Drag slider to compare</span>
               </div>
-              <button
-                class="text-sm text-primary transition-colors hover:text-primary/80"
-                @click="downloadImage(selectedImage)"
-              >
-                Download this image
-              </button>
+              <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+                <span class="text-sm text-muted-foreground">
+                  {{ formatSize(selectedImage.originalSize) }} → {{ formatSize(selectedImage.compressedSize) }}
+                  <span
+                    class="font-medium"
+                    :class="{
+                      'text-green-400': qualityTier === 'good',
+                      'text-yellow-400': qualityTier === 'caution',
+                      'text-red-400': qualityTier === 'warning',
+                    }"
+                  >({{ getSavings(selectedImage.originalSize, selectedImage.compressedSize) }}% smaller)</span>
+                </span>
+                <span
+                  v-if="qualityTier === 'caution'"
+                  class="text-xs text-yellow-400"
+                >Low quality — may look blurry</span>
+                <span
+                  v-if="qualityTier === 'warning'"
+                  class="text-xs text-red-400"
+                >Very low quality — expect visible artifacts</span>
+                <button
+                  class="text-sm font-medium text-primary transition-colors hover:text-primary/80"
+                  @click="downloadImage(selectedImage)"
+                >
+                  Download
+                </button>
+              </div>
             </div>
             <ComparisonSlider
               :key="selectedImage.id"
@@ -85,6 +128,7 @@
               :original-size="selectedImage.originalSize"
               :compressed-size="selectedImage.compressedSize"
               :quality="quality"
+              :default-zoom="isSampleImage ? 200 : 100"
               @update:quality="quality = $event"
             />
           </div>
@@ -172,9 +216,9 @@
             <div ref="qualitySliderContainer">
               <USlider
                 v-model="quality"
-                :min="10"
-                :max="100"
-                :step="5"
+                :min="QUALITY_MIN"
+                :max="QUALITY_MAX"
+                :step="QUALITY_STEP"
                 color="primary"
                 size="lg"
                 class="w-full"
@@ -235,7 +279,7 @@
             class="flex items-center justify-center gap-3 rounded border border-border bg-card p-4"
           >
             <div class="h-5 w-5 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-primary" />
-            <span class="text-sm text-muted-foreground">Compressing...</span>
+            <span class="text-sm text-muted-foreground">{{ compressionProgressText }}</span>
           </div>
           <div
             v-if="errorMessage"
@@ -258,8 +302,7 @@
       <div class="mx-auto max-w-[2000px] px-6 py-8 lg:px-10">
         <div class="flex flex-col items-center gap-4 text-center">
           <p
-            class="text-lg font-semibold tracking-wide"
-            style="color: #4ade80;"
+            class="text-lg font-semibold tracking-wide text-primary"
           >
             Privacy-focused • Real-time preview • Instant compression
           </p>
@@ -274,23 +317,37 @@
 
 <script setup lang="ts">
 import type { CompressedImage } from '~/composables/useImageCompression'
+import { FileTooLargeError, UnsupportedTypeError } from '~/composables/useImageCompression'
+import { QUALITY_DEFAULT, QUALITY_MIN, QUALITY_MAX, QUALITY_STEP, MAX_FILE_SIZE, DEBOUNCE_DELAY_MS, SAMPLE_IMAGE_URL, SAMPLE_IMAGE_FILENAME, SAMPLE_DEMO_QUALITY } from '~/utils/constants'
 
 const { compressImage, formatSize, getSavings, getFileExtension } = useImageCompression()
 
 const images = ref<CompressedImage[]>([])
-const quality = ref(75)
+const quality = ref(QUALITY_DEFAULT)
 const isDragging = ref(false)
 const selectedImageId = ref<string | null>(null)
 const isCompressing = ref(false)
+const isSampleLoading = ref(false)
+const isSampleImage = ref(false)
 const qualitySliderContainer = ref<HTMLElement | null>(null)
 const errorMessage = ref<string | null>(null)
-
-let debounceTimer: ReturnType<typeof setTimeout> | null = null
+const compressionCurrent = ref(0)
+const compressionTotal = ref(0)
 
 const selectedImage = computed(() => images.value.find(img => img.id === selectedImageId.value) || null)
 const totalOriginalSize = computed(() => images.value.reduce((sum, img) => sum + img.originalSize, 0))
 const totalCompressedSize = computed(() => images.value.reduce((sum, img) => sum + img.compressedSize, 0))
 const totalSavings = computed(() => getSavings(totalOriginalSize.value, totalCompressedSize.value))
+const compressionProgressText = computed(() => {
+  if (compressionTotal.value <= 1) return 'Compressing...'
+  return `Compressing ${compressionCurrent.value} of ${compressionTotal.value}...`
+})
+
+const qualityTier = computed(() => {
+  if (quality.value >= 50) return 'good'
+  if (quality.value >= 25) return 'caution'
+  return 'warning'
+})
 
 const ensureSliderThumbHasName = () => {
   const container = qualitySliderContainer.value
@@ -314,19 +371,41 @@ const handleDrop = async (e: DragEvent) => {
   e.preventDefault()
   isDragging.value = false
   const files = Array.from(e.dataTransfer?.files || []).filter(f => f.type.startsWith('image/'))
-  if (files.length > 0) await processFiles(files)
+  if (files.length > 0) {
+    if (isSampleImage.value) clearAll()
+    isSampleImage.value = false
+    quality.value = QUALITY_DEFAULT
+    await processFiles(files)
+  }
 }
 
 const handleFileSelect = async (e: Event) => {
   const input = e.target as HTMLInputElement
   const files = Array.from(input.files || [])
-  if (files.length > 0) await processFiles(files)
+  if (files.length > 0) {
+    if (isSampleImage.value) clearAll()
+    isSampleImage.value = false
+    quality.value = QUALITY_DEFAULT
+    await processFiles(files)
+  }
   input.value = ''
 }
 
 const processFiles = async (files: File[]) => {
   isCompressing.value = true
+  compressionTotal.value = files.length
+  compressionCurrent.value = 0
+
   for (const file of files) {
+    compressionCurrent.value++
+
+    // Validate file size before processing
+    if (file.size > MAX_FILE_SIZE) {
+      errorMessage.value = `${file.name} is too large (${formatSize(file.size)}). Maximum is ${formatSize(MAX_FILE_SIZE)}.`
+      setTimeout(() => { errorMessage.value = null }, 5000)
+      continue
+    }
+
     const id = crypto.randomUUID()
     const previewUrl = URL.createObjectURL(file)
     const newImage: CompressedImage = {
@@ -357,13 +436,16 @@ const processFiles = async (files: File[]) => {
     }
     catch (error) {
       console.error('Compression failed:', error)
-      errorMessage.value = `Failed to compress ${file.name}. Please try again.`
-      setTimeout(() => {
-        errorMessage.value = null
-      }, 5000)
+      const msg = error instanceof FileTooLargeError || error instanceof UnsupportedTypeError
+        ? error.message
+        : `Failed to compress ${file.name}. Please try again.`
+      errorMessage.value = msg
+      setTimeout(() => { errorMessage.value = null }, 5000)
     }
   }
   isCompressing.value = false
+  compressionCurrent.value = 0
+  compressionTotal.value = 0
 }
 
 const recompressAll = async () => {
@@ -428,7 +510,12 @@ const clearAll = () => {
   })
   images.value = []
   selectedImageId.value = null
+  isSampleImage.value = false
 }
+
+const { debounced: debouncedRecompress } = useDebounce(async () => {
+  await recompressAll()
+}, DEBOUNCE_DELAY_MS)
 
 watch(quality, async () => {
   // Ensure slider accessibility
@@ -437,11 +524,28 @@ watch(quality, async () => {
 
   // Debounced recompression
   if (images.value.length === 0) return
-  if (debounceTimer) clearTimeout(debounceTimer)
-  debounceTimer = setTimeout(async () => {
-    await recompressAll()
-  }, 150)
+  debouncedRecompress()
 }, { immediate: false })
+
+const loadSampleImage = async () => {
+  if (images.value.length > 0) return
+  isSampleLoading.value = true
+  try {
+    const response = await fetch(SAMPLE_IMAGE_URL)
+    if (!response.ok) throw new Error('Failed to fetch sample image')
+    const blob = await response.blob()
+    const file = new File([blob], SAMPLE_IMAGE_FILENAME, { type: 'image/jpeg' })
+    quality.value = SAMPLE_DEMO_QUALITY
+    await processFiles([file])
+    isSampleImage.value = true
+  }
+  catch (error) {
+    console.warn('Could not load sample image:', error)
+  }
+  finally {
+    isSampleLoading.value = false
+  }
+}
 
 onMounted(async () => {
   await nextTick()
@@ -454,7 +558,5 @@ onUnmounted(() => {
     if (img.compressedUrl)
       URL.revokeObjectURL(img.compressedUrl)
   })
-  if (debounceTimer)
-    clearTimeout(debounceTimer)
 })
 </script>

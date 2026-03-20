@@ -253,7 +253,7 @@ describe('ComparisonSlider', () => {
       )
 
       await zoomInButton?.trigger('click')
-      expect(wrapper.text()).toContain('Click and drag to pan')
+      expect(wrapper.text()).toContain('Drag to pan')
     })
   })
 

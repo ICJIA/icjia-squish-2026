@@ -108,7 +108,7 @@ describe('QualityIndicator', () => {
       })
 
       const label = wrapper.find('span[class*="font-semibold"]')
-      expect(label.attributes('style')).toContain('color: #4ade80')
+      expect(label.attributes('class')).toContain('text-primary')
     })
 
     it('should apply green color for "Recommended"', () => {
@@ -117,7 +117,7 @@ describe('QualityIndicator', () => {
       })
 
       const label = wrapper.find('span[class*="font-semibold"]')
-      expect(label.attributes('style')).toContain('color: #4ade80')
+      expect(label.attributes('class')).toContain('text-primary')
     })
 
     it('should apply yellow color for "Good"', () => {
