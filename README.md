@@ -1,11 +1,11 @@
 # Squish
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Nuxt](https://img.shields.io/badge/Nuxt-4.3.x-00DC82?logo=nuxt.js&logoColor=white)](https://nuxt.com/)
+[![Nuxt](https://img.shields.io/badge/Nuxt-4.4.x-00DC82?logo=nuxt.js&logoColor=white)](https://nuxt.com/)
 [![Vue](https://img.shields.io/badge/Vue-3.5.x-4FC08D?logo=vue.js&logoColor=white)](https://vuejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Nuxt UI](https://img.shields.io/badge/Nuxt_UI-3.0.x-00DC82)](https://ui.nuxt.com/)
-[![Nuxt SEO](https://img.shields.io/badge/Nuxt_SEO-3.4.x-00DC82)](https://nuxtseo.com/)
+[![Nuxt SEO](https://img.shields.io/badge/Nuxt_SEO-4.0.x-00DC82)](https://nuxtseo.com/)
 
 > **Image compression for writers and designers**
 
@@ -17,16 +17,17 @@ A modern, privacy-focused image compression tool built with Nuxt 4. Squish helps
 
 ## ✨ Features
 
-- **🔒 Privacy First**: All processing happens locally in your browser - your images never leave your device
+- **🔒 Privacy First**: All processing happens locally in your browser — your images never leave your device
 - **👁️ Live Preview Comparison**: Interactive side-by-side slider to compare original vs compressed images
-- **🔍 Zoom & Pan**: Magnify up to 800% with click-and-drag panning for pixel-level inspection
+- **🔍 Zoom & Pan**: Magnify up to 800% with mouse wheel zoom and click-and-drag panning for pixel-level inspection
 - **⚡ Real-time Updates**: See compression effects instantly as you adjust quality settings
 - **📏 Large Preview Window**: Optimized for wide screens with up to 2000px layout for detailed inspection
 - **🎨 Modern UI**: Dark theme with clean, intuitive interface using Nuxt UI components
 - **📱 Responsive Design**: Works seamlessly across desktop, tablet, and mobile devices
-- **🎯 Smart Quality Control**: Visual indicators and recommendations for optimal compression
+- **🎯 Smart Quality Control**: Color-coded warnings (green/yellow/red) for quality levels with inline compression stats
 - **📦 Batch Processing**: Compress multiple images at once
-- **💾 Easy Download**: Download individual images or all at once
+- **💾 Easy Download**: Download individual images or all at once with file size and savings displayed
+- **🖼️ Sample Image Demo**: Load a sample image to try the tool without needing your own files
 
 ## 🚀 Quick Start
 
@@ -79,10 +80,11 @@ yarn build
 
 ## 📖 How It Works
 
-1. **Drop or Upload**: Drag and drop images or click to browse
-2. **Adjust Quality**: Use the slider to set compression level (10-100%)
-3. **Preview Comparison**: Drag the comparison slider to see the difference
-4. **Download**: Save individual images or download all at once
+1. **Try It Out**: Click "Load Sample Image" to see the tool in action, or drop your own images
+2. **Drop or Upload**: Drag and drop images or click to browse
+3. **Adjust Quality**: Use the slider to set compression level (10–100%)
+4. **Preview Comparison**: Drag the comparison slider to see the difference; scroll to zoom in for detail
+5. **Download**: Save individual images or download all at once — file sizes and savings are shown inline
 
 ### Compression Process
 
@@ -98,13 +100,14 @@ yarn build
 - **3:2 aspect ratio**: Optimal for most images
 - **Min height**: 700px for comfortable viewing
 - **Interactive slider**: Smooth drag-to-compare experience
-- **Zoom controls**: Zoom in/out (100%–800%) with reset button
+- **Zoom controls**: Zoom in/out (100%–800%) with reset button and mouse wheel support
 - **Pan mode**: Click and drag to pan when zoomed above 100%
+- **Persistent drag**: Slider and pan track the mouse even when cursor leaves the image area
 
 ### Quality Control
 - **Visual slider**: Clear track with current value display
-- **Quality indicators**: Recommendations based on your settings
-- **Real-time stats**: See file size savings instantly
+- **Quality indicators**: Color-coded warnings — green (50%+), yellow (25–49%), red (below 25%) — so you know when quality may suffer
+- **Real-time stats**: See original size, compressed size, and savings percentage inline
 - **Smart defaults**: Starts at 75% quality for optimal balance
 
 ## 🧪 Testing
@@ -154,7 +157,8 @@ icjia-squish-2026/
 │   │   ├── ImageCompressor.vue   # Main app component
 │   │   └── QualityIndicator.vue  # Quality recommendations
 │   ├── composables/
-│   │   └── useImageCompression.ts # Compression logic
+│   │   ├── useImageCompression.ts # Compression logic
+│   │   └── useDebounce.ts         # Debounced function utility
 │   ├── pages/
 │   │   └── index.vue             # Home page
 │   ├── app.config.ts             # App configuration
@@ -199,7 +203,7 @@ dist
 The `netlify.toml` file is pre-configured with:
 - **Nitro preset**: `netlify-static` for optimal static site generation
 - **Output directory**: `dist` (Nuxt 4 custom configuration)
-- **Security headers**: X-Frame-Options, CSP, Referrer-Policy
+- **Security headers**: CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy
 - **Cache headers**: 1-year cache for `/_nuxt/*` assets with immutable flag
 
 ### Environment Variables
@@ -225,6 +229,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Built with [Nuxt](https://nuxt.com/) and [Nuxt UI](https://ui.nuxt.com/)
 - Inspired by the need for privacy-focused image tools
 - Original Next.js implementation available in `documentation/` folder
+
+## 📋 Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes and version releases.
 
 ## 📧 Contact
 
