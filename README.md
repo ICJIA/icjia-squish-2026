@@ -230,6 +230,29 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Inspired by the need for privacy-focused image tools
 - Original Next.js implementation available in `documentation/` folder
 
+## 🛡️ Security & Accessibility Audits
+
+> Last audited: 2026-03-27. Full details in [CHANGELOG.md](CHANGELOG.md).
+
+### Security (Red/Blue Team)
+
+| Severity | Count |
+|----------|-------|
+| Critical | 0 |
+| High | 0 |
+| Medium | 2 (architectural constraints: CSP `unsafe-inline` for Nuxt SSG, `blob:` for Web Workers) |
+| Low | 8 |
+
+No server-side attack surface (static site). No user data storage or transmission. All security headers properly configured (CSP, HSTS, X-Frame-Options, Permissions-Policy, Referrer-Policy). Input validation on file types and size. No `v-html` usage.
+
+### Accessibility (axe-core 4.10.2)
+
+| Metric | Result |
+|--------|--------|
+| Rules passed | 39/39 |
+| Violations | 0 |
+| Standards | WCAG 2.0 A/AA, WCAG 2.1 A/AA, Best Practices |
+
 ## 📋 Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes and version releases.

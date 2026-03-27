@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Latest Audit Results
+
+> These summaries are updated each time a full audit is run.
+
+### Security Audit (Red/Blue Team) — 2026-03-27
+
+| Severity | Count | Details |
+|----------|-------|---------|
+| Critical | 0 | — |
+| High | 0 | — |
+| Medium | 2 | CSP requires `unsafe-inline` for scripts (Nuxt SSG architectural constraint); CSP requires `blob:` in `script-src` (Web Worker requirement) |
+| Low | 8 | Inline dark-mode script in config (hardcoded, not user-controlled); no SRI on external Unsplash fetch; no SRI on Iconify CDN icons; `crossOrigin='anonymous'` on canvas image element; coverage directory in repo (gitignored) |
+
+**Blue Team Assessment:** Strong security posture for a static client-side tool. No server-side attack surface (SSG with `netlify-static`). No user data storage or transmission. Proper input validation (file type allowlist, 50 MB size cap). No `v-html` usage. External links use `rel="noopener noreferrer"`. Security headers (CSP, HSTS, X-Frame-Options, Permissions-Policy, Referrer-Policy) all properly configured. The two medium findings are architectural constraints of Nuxt SSG + Web Workers and cannot be resolved without removing core functionality.
+
+### Accessibility Audit (axe-core 4.10.2) — 2026-03-27
+
+| Metric | Result |
+|--------|--------|
+| Rules passed | 39/39 |
+| Violations | 0 |
+| Incomplete | 0 |
+| Standards tested | WCAG 2.0 A, WCAG 2.0 AA, WCAG 2.1 A, WCAG 2.1 AA, Best Practices |
+
+---
+
 ## [1.4.0] - 2026-03-27
 
 ### Fixed
