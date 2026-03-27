@@ -11,14 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security Audit (Red/Blue Team) — 2026-03-27
 
-| Severity | Count | Details |
-|----------|-------|---------|
-| Critical | 0 | — |
-| High | 0 | — |
-| Medium | 2 | CSP requires `unsafe-inline` for scripts (Nuxt SSG architectural constraint); CSP requires `blob:` in `script-src` (Web Worker requirement) |
-| Low | 8 | Inline dark-mode script in config (hardcoded, not user-controlled); no SRI on external Unsplash fetch; no SRI on Iconify CDN icons; `crossOrigin='anonymous'` on canvas image element; coverage directory in repo (gitignored) |
+| Severity | Found | Fixed | Remaining | Details |
+|----------|-------|-------|-----------|---------|
+| Critical | 0 | — | 0 | — |
+| High | 0 | — | 0 | — |
+| Medium | 2 | 2 | 0 | Removed `blob:` from CSP `script-src` and `worker-src` (moved Web Worker to static file); removed redundant inline dark-mode script to reduce `unsafe-inline` surface (Nuxt SSG hydration still requires `unsafe-inline` — architectural constraint, no practical exploit path for a static site with no user-generated content) |
+| Low | 8 | 8 | 0 | Removed inline dark-mode script (redundant with `htmlAttrs`); added content-type validation on Unsplash sample fetch; bundled icons at build time (removed Iconify CDN runtime dependency from CSP); removed unnecessary `crossOrigin='anonymous'` on canvas image element; deleted coverage directory from repo; disabled devtools in production; replaced deprecated `X-XSS-Protection`; hardened CSP with `object-src`/`base-uri`/`form-action` directives |
 
-**Blue Team Assessment:** Strong security posture for a static client-side tool. No server-side attack surface (SSG with `netlify-static`). No user data storage or transmission. Proper input validation (file type allowlist, 50 MB size cap). No `v-html` usage. External links use `rel="noopener noreferrer"`. Security headers (CSP, HSTS, X-Frame-Options, Permissions-Policy, Referrer-Policy) all properly configured. The two medium findings are architectural constraints of Nuxt SSG + Web Workers and cannot be resolved without removing core functionality.
+**Blue Team Assessment:** All findings resolved. Strong security posture for a static client-side tool. No server-side attack surface (SSG with `netlify-static`). No user data storage or transmission. Proper input validation (file type allowlist, 50 MB size cap). No `v-html` usage. External links use `rel="noopener noreferrer"`. Security headers (CSP, HSTS, X-Frame-Options, Permissions-Policy, Referrer-Policy) all properly configured. No runtime CDN dependencies — icons bundled at build time. Web Worker loaded from same-origin static file.
 
 ### Accessibility Audit (axe-core 4.10.2) — 2026-03-27
 
@@ -37,12 +37,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Touch panning on comparison slider (undefined `startPan`, `handlePanMove`, `stopPan` functions caused runtime errors on touch devices)
 - Devtools exposed in production builds (now only enabled in development)
+- Removed unnecessary `crossOrigin='anonymous'` on canvas image element (images are always same-origin blob URLs)
 
 ### Security
 
-- Replaced deprecated `X-XSS-Protection: 1; mode=block` with `X-XSS-Protection: 0` per current best practices (relies on CSP instead)
+- Moved Web Worker to static file (`public/compression-worker.js`), removing `blob:` from CSP `script-src` and `worker-src`
+- Removed redundant inline dark-mode script (already handled by `htmlAttrs: { class: 'dark' }`)
+- Bundled icons at build time via `@nuxt/icon` `clientBundle`, eliminating runtime CDN dependency on `api.iconify.design`
+- Added content-type validation on sample image fetch response
+- Replaced deprecated `X-XSS-Protection: 1; mode=block` with `X-XSS-Protection: 0` per current best practices
 - Hardened CSP with `object-src 'none'`, `base-uri 'self'`, and `form-action 'self'` directives
-- Full red/blue team security audit and axe-core accessibility audit passed (39/39 checks, 0 violations)
+- Removed coverage directory from repository
+- Full red/blue team security audit: 10 findings, 10 fixed, 0 remaining
+- Full axe-core accessibility audit passed (39/39 checks, 0 violations)
 
 ## [1.3.0] - 2026-03-20
 

@@ -236,14 +236,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Security (Red/Blue Team)
 
-| Severity | Count |
-|----------|-------|
-| Critical | 0 |
-| High | 0 |
-| Medium | 2 (architectural constraints: CSP `unsafe-inline` for Nuxt SSG, `blob:` for Web Workers) |
-| Low | 8 |
+| Severity | Found | Fixed | Remaining |
+|----------|-------|-------|-----------|
+| Critical | 0 | — | 0 |
+| High | 0 | — | 0 |
+| Medium | 2 | 2 | 0 |
+| Low | 8 | 8 | 0 |
 
-No server-side attack surface (static site). No user data storage or transmission. All security headers properly configured (CSP, HSTS, X-Frame-Options, Permissions-Policy, Referrer-Policy). Input validation on file types and size. No `v-html` usage.
+All findings resolved. No server-side attack surface (static site). No user data storage or transmission. No runtime CDN dependencies (icons bundled at build time). Web Worker loaded from same-origin static file. All security headers properly configured (CSP, HSTS, X-Frame-Options, Permissions-Policy, Referrer-Policy). Input validation on file types and size. No `v-html` usage.
 
 ### Accessibility (axe-core 4.10.2)
 
@@ -251,6 +251,7 @@ No server-side attack surface (static site). No user data storage or transmissio
 |--------|--------|
 | Rules passed | 39/39 |
 | Violations | 0 |
+| Incomplete | 0 |
 | Standards | WCAG 2.0 A/AA, WCAG 2.1 A/AA, Best Practices |
 
 ## 📋 Changelog

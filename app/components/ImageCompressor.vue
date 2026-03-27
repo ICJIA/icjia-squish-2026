@@ -533,6 +533,8 @@ const loadSampleImage = async () => {
   try {
     const response = await fetch(SAMPLE_IMAGE_URL)
     if (!response.ok) throw new Error('Failed to fetch sample image')
+    const contentType = response.headers.get('content-type') || ''
+    if (!contentType.startsWith('image/')) throw new Error('Invalid response content-type')
     const blob = await response.blob()
     const file = new File([blob], SAMPLE_IMAGE_FILENAME, { type: 'image/jpeg' })
     quality.value = SAMPLE_DEMO_QUALITY

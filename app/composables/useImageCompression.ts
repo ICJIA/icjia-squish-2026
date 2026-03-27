@@ -50,31 +50,10 @@ function compressInWorker(
   format: string,
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    const workerCode = `
-      self.onmessage = async (e) => {
-        const { file, quality, format } = e.data;
-        try {
-          const bitmap = await createImageBitmap(file);
-          const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
-          const ctx = canvas.getContext('2d');
-          if (!ctx) throw new Error('Could not get canvas context');
-          ctx.drawImage(bitmap, 0, 0);
-          const q = format === 'image/png' ? undefined : quality / 100;
-          const blob = await canvas.convertToBlob({ type: format, quality: q });
-          self.postMessage({ blob });
-          bitmap.close();
-        } catch (err) {
-          self.postMessage({ error: err.message });
-        }
-      };
-    `
-    const blob = new Blob([workerCode], { type: 'application/javascript' })
-    const workerUrl = URL.createObjectURL(blob)
-    const worker = new Worker(workerUrl)
+    const worker = new Worker('/compression-worker.js')
 
     worker.onmessage = (e: MessageEvent) => {
       worker.terminate()
-      URL.revokeObjectURL(workerUrl)
       if (e.data.error) {
         reject(new Error(e.data.error))
       }
@@ -85,7 +64,6 @@ function compressInWorker(
 
     worker.onerror = (e: ErrorEvent) => {
       worker.terminate()
-      URL.revokeObjectURL(workerUrl)
       reject(new Error(e.message || 'Worker error'))
     }
 
@@ -101,7 +79,7 @@ function compressOnMainThread(
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image()
-    img.crossOrigin = 'anonymous'
+    // No crossOrigin needed: images are always local blob URLs from URL.createObjectURL
 
     img.onload = () => {
       URL.revokeObjectURL(img.src)
