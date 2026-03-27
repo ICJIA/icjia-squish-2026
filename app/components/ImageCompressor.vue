@@ -6,7 +6,7 @@
           Squish
         </h1>
         <div class="flex items-center gap-6">
-          <span class="hidden text-sm tracking-wide text-muted-foreground sm:block">image compression for writers and designers</span>
+          <span class="hidden text-sm tracking-wide text-muted-foreground sm:block">image compression for writers and developers</span>
           <a
             href="https://github.com/ICJIA/icjia-squish-2026"
             target="_blank"

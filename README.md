@@ -7,9 +7,9 @@
 [![Nuxt UI](https://img.shields.io/badge/Nuxt_UI-3.0.x-00DC82)](https://ui.nuxt.com/)
 [![Nuxt SEO](https://img.shields.io/badge/Nuxt_SEO-4.0.x-00DC82)](https://nuxtseo.com/)
 
-> **Image compression for writers and designers**
+> **Image compression for writers and developers**
 
-A modern, privacy-focused image compression tool built with Nuxt 4. Squish helps writers and designers optimize their images with a beautiful, interactive preview comparison slider and real-time quality adjustments.
+A modern, privacy-focused image compression tool built with Nuxt 4. Squish helps writers and developers optimize their images with a beautiful, interactive preview comparison slider and real-time quality adjustments.
 
 ![Squish Open Graph Image](public/og-image.png)
 
@@ -264,4 +264,4 @@ ICJIA - Illinois Criminal Justice Information Authority
 
 ---
 
-**Made with ❤️ for writers and designers who care about image quality and file size**
+**Made with ❤️ for writers and developers who care about image quality and file size**
