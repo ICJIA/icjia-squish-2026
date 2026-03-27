@@ -13,7 +13,7 @@ export default defineNuxtConfig({
 
   // Static site generation for Netlify with SSR for SEO
   ssr: true,
-  devtools: { enabled: true },
+  devtools: { enabled: process.env.NODE_ENV === 'development' },
 
   // App configuration
   app: {

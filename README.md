@@ -203,7 +203,7 @@ dist
 The `netlify.toml` file is pre-configured with:
 - **Nitro preset**: `netlify-static` for optimal static site generation
 - **Output directory**: `dist` (Nuxt 4 custom configuration)
-- **Security headers**: CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy
+- **Security headers**: CSP (with `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`), HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy
 - **Cache headers**: 1-year cache for `/_nuxt/*` assets with immutable flag
 
 ### Environment Variables

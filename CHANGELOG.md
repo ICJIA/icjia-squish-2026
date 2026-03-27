@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-03-27
+
+### Fixed
+
+- Touch panning on comparison slider (undefined `startPan`, `handlePanMove`, `stopPan` functions caused runtime errors on touch devices)
+- Devtools exposed in production builds (now only enabled in development)
+
+### Security
+
+- Replaced deprecated `X-XSS-Protection: 1; mode=block` with `X-XSS-Protection: 0` per current best practices (relies on CSP instead)
+- Hardened CSP with `object-src 'none'`, `base-uri 'self'`, and `form-action 'self'` directives
+- Full red/blue team security audit and axe-core accessibility audit passed (39/39 checks, 0 violations)
+
 ## [1.3.0] - 2026-03-20
 
 ### Added

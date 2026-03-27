@@ -283,7 +283,8 @@ const handleMouseDown = (e: MouseEvent) => {
 // Touch handlers
 const handleTouchStart = (e: TouchEvent) => {
   if (e.touches[0] && zoom.value > 100) {
-    startPan(e.touches[0].clientX, e.touches[0].clientY)
+    isPanning.value = true
+    lastPanPosition.value = { x: e.touches[0].clientX, y: e.touches[0].clientY }
   }
 }
 
@@ -294,13 +295,18 @@ const handleTouchMove = (e: TouchEvent) => {
     handleSliderMove(e.touches[0].clientX)
   }
   else if (isPanning.value) {
-    handlePanMove(e.touches[0].clientX, e.touches[0].clientY)
+    const deltaX = e.touches[0].clientX - lastPanPosition.value.x
+    const deltaY = e.touches[0].clientY - lastPanPosition.value.y
+    const scaleFactor = zoom.value / 100
+    panX.value += deltaX / scaleFactor
+    panY.value += deltaY / scaleFactor
+    lastPanPosition.value = { x: e.touches[0].clientX, y: e.touches[0].clientY }
   }
 }
 
 const handleTouchEnd = () => {
   isDraggingSlider.value = false
-  stopPan()
+  isPanning.value = false
 }
 
 // Reset pan when zoom is reset
