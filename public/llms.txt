@@ -1,0 +1,32 @@
+# Squish
+
+> Squish is a free, privacy-focused image compression tool for writers and developers. It compresses PNG, JPEG, and WebP images instantly in the browser with a live before/after comparison slider — no account, no uploads, and no server. All processing happens locally on the user's device, so images never leave the browser.
+
+Squish is an open-source web application built with Nuxt 4 and published by the Illinois Criminal Justice Information Authority (ICJIA). Images are processed client-side with the HTML5 Canvas API; the original files are never modified and are never transmitted anywhere.
+
+## How it works
+
+- Drop or select PNG, JPEG, or WebP images (or load a sample image to try it).
+- Adjust the quality slider (10–100%); color-coded guidance flags when quality may suffer.
+- Drag the comparison slider to inspect original vs. compressed side by side; scroll to zoom (100–800%) and drag to pan.
+- Download images individually or all at once, with file sizes and savings shown inline.
+
+## Features
+
+- Client-side compression for PNG, JPEG, and WebP — images never leave the device
+- Live before/after comparison slider with zoom and pan
+- Adjustable quality with real-time size and savings stats
+- Batch processing with individual or bulk download
+- Dark, responsive, WCAG 2.1 AA-accessible interface
+
+## Links
+
+- [Squish app](https://squish.icjia.app/): The live tool
+- [Source code](https://github.com/ICJIA/icjia-squish-2026): GitHub repository (MIT license)
+- [License](https://github.com/ICJIA/icjia-squish-2026/blob/main/LICENSE): MIT License
+
+## About
+
+- Author: cschweda (https://github.com/cschweda)
+- Publisher: Illinois Criminal Justice Information Authority (ICJIA) — https://icjia.illinois.gov/
+- Built with: Nuxt 4, Vue 3, Nuxt UI, Nuxt SEO, Tailwind CSS

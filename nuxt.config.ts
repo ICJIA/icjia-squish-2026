@@ -3,21 +3,6 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/ui', '@nuxt/icon', '@nuxtjs/seo'],
 
-  // Bundle icons at build time to avoid runtime CDN requests to api.iconify.design
-  icon: {
-    clientBundle: {
-      scan: true,
-    },
-  },
-
-  // Force dark-only — no light/dark toggle exists
-  colorMode: {
-    preference: 'dark',
-    fallback: 'dark',
-    classSuffix: '',
-    storageKey: 'nuxt-color-mode',
-  },
-
   // Static site generation for Netlify with SSR for SEO
   ssr: true,
   devtools: { enabled: process.env.NODE_ENV === 'development' },
@@ -71,6 +56,22 @@ export default defineNuxtConfig({
     indexable: true,
   },
 
+  // Force dark-only — no light/dark toggle exists
+  colorMode: {
+    preference: 'dark',
+    fallback: 'dark',
+    classSuffix: '',
+    storageKey: 'nuxt-color-mode',
+  },
+
+  // Build timestamp baked in at generate time — powers JSON-LD dateModified
+  // so content-freshness stays accurate on every deploy without manual edits.
+  runtimeConfig: {
+    public: {
+      buildDate: new Date().toISOString(),
+    },
+  },
+
   // Enable Nuxt 4 behavior
   future: {
     compatibilityVersion: 4,
@@ -101,6 +102,13 @@ export default defineNuxtConfig({
     typeCheck: false,
   },
 
+  // Bundle icons at build time to avoid runtime CDN requests to api.iconify.design
+  icon: {
+    clientBundle: {
+      scan: true,
+    },
+  },
+
   // OG Image configuration (disabled for static sites)
   ogImage: {
     enabled: false,
@@ -109,6 +117,14 @@ export default defineNuxtConfig({
   // Robots.txt configuration
   robots: {
     allow: '/',
+  },
+
+  // Schema.org JSON-LD is emitted manually into <head> (app/pages/index.vue via
+  // app/utils/structuredData.ts) so AI/SEO scanners that only read <head> detect
+  // it. nuxt-schema-org v5 renders only at bodyClose and does not forward a
+  // tagPosition option, so its auto-graph is disabled to avoid a duplicate.
+  schemaOrg: {
+    enabled: false,
   },
 
   // Sitemap configuration

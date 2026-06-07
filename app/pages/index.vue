@@ -7,6 +7,7 @@
 useSeoMeta({
   title: 'Squish - Image Compression for Writers & Developers',
   description: 'Privacy-focused image compression for writers and developers. Compress images instantly in your browser with real-time preview. No uploads required.',
+  author: 'cschweda',
   ogTitle: 'Squish - Image Compression for Writers & Developers',
   ogDescription: 'Privacy-focused image compression for writers and developers. Compress images instantly in your browser with real-time preview. No uploads required.',
   ogImage: 'https://squish.icjia.app/og-image.png',
@@ -21,20 +22,18 @@ useSeoMeta({
   twitterImageAlt: 'Squish - Image compression for writers and developers',
 })
 
-// Define schema.org structured data
-useSchemaOrg([
-  {
-    '@type': 'WebApplication',
-    'name': 'Squish',
-    'description': 'Privacy-focused image compression for writers and developers',
-    'url': 'https://squish.icjia.app/',
-    'applicationCategory': 'UtilityApplication',
-    'operatingSystem': 'Any',
-    'offers': {
-      '@type': 'Offer',
-      'price': '0',
-      'priceCurrency': 'USD',
+// Emit the schema.org JSON-LD graph directly into <head> so AI/SEO scanners
+// that only read <head> can detect it. The graph (Organization, Person,
+// WebSite, WebPage, WebApplication) is built in app/utils/structuredData.ts;
+// nuxt-schema-org's auto-graph is disabled in nuxt.config to avoid a duplicate.
+const { buildDate } = useRuntimeConfig().public
+
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(buildSquishGraph({ buildDate })),
     },
-  },
-])
+  ],
+})
 </script>
