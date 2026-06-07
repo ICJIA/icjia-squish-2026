@@ -12,7 +12,7 @@ const { compressImage: mockCompressImage, formatSize: mockFormatSize, getSavings
 const stubs = {
   UIcon: true,
   USlider: true,
-  ComparisonSlider: true,
+  LazyComparisonSlider: true,
   QualityIndicator: true,
 }
 

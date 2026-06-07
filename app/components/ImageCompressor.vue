@@ -121,7 +121,7 @@
                 </button>
               </div>
             </div>
-            <ComparisonSlider
+            <LazyComparisonSlider
               :key="selectedImage.id"
               :original-url="selectedImage.previewUrl"
               :compressed-url="selectedImage.compressedUrl"
@@ -402,7 +402,9 @@ const processFiles = async (files: File[]) => {
     // Validate file size before processing
     if (file.size > MAX_FILE_SIZE) {
       errorMessage.value = `${file.name} is too large (${formatSize(file.size)}). Maximum is ${formatSize(MAX_FILE_SIZE)}.`
-      setTimeout(() => { errorMessage.value = null }, 5000)
+      setTimeout(() => {
+        errorMessage.value = null
+      }, 5000)
       continue
     }
 
@@ -440,7 +442,9 @@ const processFiles = async (files: File[]) => {
         ? error.message
         : `Failed to compress ${file.name}. Please try again.`
       errorMessage.value = msg
-      setTimeout(() => { errorMessage.value = null }, 5000)
+      setTimeout(() => {
+        errorMessage.value = null
+      }, 5000)
     }
   }
   isCompressing.value = false
