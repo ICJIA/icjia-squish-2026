@@ -85,7 +85,7 @@ export function buildSquishGraph({ buildDate }: StructuredDataOptions): SquishGr
         'browserRequirements': 'Requires JavaScript and a modern web browser.',
         'inLanguage': 'en',
         'isAccessibleForFree': true,
-        'softwareVersion': '1.4.0',
+        'softwareVersion': '1.4.1',
         'license': 'https://opensource.org/licenses/MIT',
         'datePublished': DATE_PUBLISHED,
         'dateModified': buildDate,

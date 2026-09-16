@@ -102,9 +102,31 @@ export default defineNuxtConfig({
     typeCheck: false,
   },
 
-  // Bundle icons at build time to avoid runtime CDN requests to api.iconify.design
+  // Icons are packaged into the client bundle at build time from the installed
+  // @iconify-json/lucide collection, never fetched at runtime. The production CSP
+  // refuses api.iconify.design in connect-src, and it should stay that way.
   icon: {
+    // Under `nuxt generate` the provider otherwise resolves to 'iconify', which
+    // sends any icon missing from the bundle to api.iconify.design (fallbackToApi
+    // does not govern that path). 'none' never fetches, so a missing icon stays
+    // blank and logs "[Icon] failed to load icon" instead.
+    provider: 'none',
+    fallbackToApi: false,
     clientBundle: {
+      // Every icon the templates use, listed by name so none depends on the scan
+      // noticing it; `yarn generate` fails if one is missing from the collection.
+      // lucide:github is a retired Lucide brand icon, still shipped marked hidden.
+      icons: [
+        'lucide:chevron-left',
+        'lucide:chevron-right',
+        'lucide:circle-alert',
+        'lucide:download',
+        'lucide:github',
+        'lucide:image',
+        'lucide:x',
+        'lucide:zoom-in',
+        'lucide:zoom-out',
+      ],
       scan: true,
     },
   },

@@ -909,6 +909,13 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/retry/-/retry-0.4.3.tgz#c2b9d2e374ee62c586d3adbea87199b1d7a7a6ba"
   integrity sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==
 
+"@iconify-json/lucide@^1.2.133":
+  version "1.2.133"
+  resolved "https://registry.yarnpkg.com/@iconify-json/lucide/-/lucide-1.2.133.tgz#9cc3877445f10db8c84774aa0ae2d8ad5561a073"
+  integrity sha512-zBlWJFHgLI53EMoTXyvIpjZslL5+/voWXNnhxDK6M+VoveFIYxYDgLGJr4lnAkQOscKmRoUfdxqhMZI6VYF32g==
+  dependencies:
+    "@iconify/types" "*"
+
 "@iconify/collections@^1.0.563":
   version "1.0.646"
   resolved "https://registry.yarnpkg.com/@iconify/collections/-/collections-1.0.646.tgz#c5b4497efccbfdd84e860b8d07038dbd5c56a717"

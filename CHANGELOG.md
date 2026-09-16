@@ -31,6 +31,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.1] - 2026-09-16
+
+Fixes the two defects that the September 16, 2026 health check and accessibility check of squish.icjia.app found once an image is added: seven icons that never appeared in production, and a page too wide for most screens.
+
+### Fixed
+
+- Seven icons never appeared in production: the zoom buttons, the comparison handle's arrows, each image's Download and Remove, Download all, and the error message's warning sign. The 1.4.0 build-time icon bundle packaged nothing, because no icon collection was installed, so these icons were requested from `api.iconify.design` at runtime and refused by the CSP (`connect-src`). `yarn dev` sends no CSP, which is why they worked locally.
+  - Added `@iconify-json/lucide` and listed all nine icons the app uses in `icon.clientBundle.icons` (`scan` stays on), so a listed icon missing from the collection fails `yarn generate`.
+  - Set `icon.provider: 'none'` and `fallbackToApi: false`, so an icon missing from the bundle renders blank and logs `[Icon] failed to load icon` instead of reaching for the network. `fallbackToApi: false` alone is not enough: under `nuxt generate` the provider resolves to `iconify`, which still requested a missing icon from `api.iconify.design`.
+  - The error message's icon uses Lucide's current name, `circle-alert` (`alert-circle` is now only an alias). The GitHub icon is a retired Lucide brand icon that the collection still ships, hidden; it is kept and listed.
+  - The CSP is unchanged. Iconify was not added back to `connect-src`.
+- The page scrolled sideways once an image was added. The comparison box's `min-height: 700px` at 3:2 forced it to be at least 1,050 px wide, pushing the quality percentage and Summary savings off a 1,366 px laptop screen. The box now fills its column at 3:2, capped at 80% of the viewport height or 900 px and centred when the cap applies. The preview's zoom and quality rows and the Preview Comparison heading row wrap on narrow screens, and the preview's quality slider takes its own line rather than shrinking below 10rem.
+
+### Verified
+
+In Chromium (Playwright 1.63) against the generated `dist/`, served with the exact headers in `netlify.toml` including the CSP, and compared with a 1.4.0 build tested the same way:
+
+- Every icon draws in every state: the empty page, the drop zone, one image with the zoom controls, three images with per-image Download and Remove, and the error for a rejected GIF. The footer has no icons.
+- Zero requests to `api.iconify.design`, `api.unisvg.com` or `api.simplesvg.com`, and zero CSP violations, across the session. The same session on 1.4.0 logged three refused Iconify requests.
+- No sideways scroll at 320, 375, 768, 1,280, 1,366, 1,440 or 1,920 px, with one image and with three. On 1.4.0 the page was 1,074 px wide at 320–768 px and 1,490 px wide at 1,280–1,440 px. The box measured 3:2 (1.500) at every width: 886 × 591 at 1,366 × 768, and 1,296 × 864 at 1,920 × 1,080.
+- Dragging the divider (including out of the box and back), zoom in, out and reset across 100–800%, wheel zoom and panning passed the same 14 checks as 1.4.0 at 1,366 and 1,920 px, and now also pass at 375 px.
+- Compression output is byte-identical to 1.4.0: a 2,400 × 1,600 test JPEG at quality 75 downloads as 757,645 bytes from both, and a WebP and a PNG match too.
+- A temporary build with a deliberately missing icon left it blank and logged the warning, with no network request even with the CSP removed.
+- `yarn test` (106 tests), `yarn typecheck` and `yarn generate` pass. `yarn lint` reports only the 24 errors already in `test/`.
+
 ## [1.4.0] - 2026-03-27
 
 ### Fixed

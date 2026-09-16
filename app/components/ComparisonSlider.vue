@@ -2,9 +2,9 @@
   <div class="space-y-3">
     <!-- Zoom and Quality Controls -->
     <div class="space-y-3 rounded-lg border border-border bg-card px-4 py-3">
-      <!-- Zoom Controls Row -->
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
+      <!-- Zoom Controls Row (wraps on narrow screens rather than widening the page) -->
+      <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
           <span class="text-sm font-medium text-muted-foreground">Zoom:</span>
           <div class="flex items-center gap-2">
             <button
@@ -47,8 +47,8 @@
         </div>
       </div>
 
-      <!-- Quality Slider Row -->
-      <div class="flex items-center gap-4">
+      <!-- Quality Slider Row (the slider wraps to its own line rather than shrinking below 10rem) -->
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
         <div class="flex items-center gap-3">
           <span
             id="preview-quality-label"
@@ -58,7 +58,7 @@
         </div>
         <div
           ref="previewQualitySliderContainer"
-          class="flex-1"
+          class="min-w-40 flex-1"
         >
           <USlider
             v-model="localQuality"
@@ -78,12 +78,14 @@
       </div>
     </div>
 
-    <!-- Comparison Container -->
+    <!-- Comparison Container: always 3:2 and as wide as its column, but never taller
+         than 80% of the viewport or 900px. No minimum size: a 700px minimum height
+         forced a 1,050px-wide box and made the whole page scroll sideways. -->
     <div
       ref="containerRef"
-      class="relative w-full select-none overflow-hidden rounded-lg bg-muted"
+      class="relative mx-auto w-full select-none overflow-hidden rounded-lg bg-muted"
       :class="zoom > 100 ? 'cursor-grab active:cursor-grabbing' : 'cursor-ew-resize'"
-      style="aspect-ratio: 3/2; min-height: 700px; max-height: 900px;"
+      style="aspect-ratio: 3 / 2; max-width: calc(min(900px, 80svh) * 3 / 2);"
       @mousedown="handleMouseDown"
       @wheel.prevent="handleWheel"
       @touchstart="handleTouchStart"

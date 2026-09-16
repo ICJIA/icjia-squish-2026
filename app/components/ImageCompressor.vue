@@ -86,7 +86,7 @@
             v-if="selectedImage && selectedImage.compressedUrl"
             class="space-y-4"
           >
-            <div class="flex items-center justify-between">
+            <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
               <div class="flex items-center gap-2">
                 <h2 class="text-lg font-semibold text-foreground">
                   Preview Comparison
@@ -287,7 +287,7 @@
           >
             <div class="flex items-start gap-3">
               <UIcon
-                name="i-lucide-alert-circle"
+                name="i-lucide-circle-alert"
                 class="mt-0.5 h-5 w-5 shrink-0 text-destructive"
               />
               <p class="text-sm text-destructive">

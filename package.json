@@ -1,6 +1,6 @@
 {
   "name": "nuxt-squish-app",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -26,6 +26,7 @@
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.133",
     "@nuxt/eslint": "^1.0.0",
     "@nuxt/icon": "^1.10.2",
     "@nuxtjs/seo": "^4.0.2",
