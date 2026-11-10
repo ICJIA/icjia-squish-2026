@@ -4,7 +4,7 @@
 [![Nuxt](https://img.shields.io/badge/Nuxt-4.6.x-00DC82?logo=nuxt.js&logoColor=white)](https://nuxt.com/)
 [![Vue](https://img.shields.io/badge/Vue-3.5.x-4FC08D?logo=vue.js&logoColor=white)](https://vuejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Nuxt UI](https://img.shields.io/badge/Nuxt_UI-3.3.x-00DC82)](https://ui.nuxt.com/)
+[![Nuxt UI](https://img.shields.io/badge/Nuxt_UI-4.12.x-00DC82)](https://ui.nuxt.com/)
 [![Nuxt SEO](https://img.shields.io/badge/Nuxt_SEO-4.0.x-00DC82)](https://nuxtseo.com/)
 
 > **Image compression for writers and developers**
@@ -121,7 +121,7 @@ Changing the quality, format or size recompresses every picture after a 150 ms p
 ## Tech stack
 
 - **[Nuxt 4](https://nuxt.com/)** with **[Vue 3](https://vuejs.org/)** and **[TypeScript](https://www.typescriptlang.org/)**, pre-rendered to static files with `nuxt generate`
-- **[Nuxt UI 3](https://ui.nuxt.com/)** on **[Tailwind CSS 4](https://tailwindcss.com/)**, with Lucide icons compiled into the bundle at build time
+- **[Nuxt UI 4](https://ui.nuxt.com/)** on **[Tailwind CSS 4](https://tailwindcss.com/)**, with Lucide icons compiled into the bundle at build time
 - **[Nuxt SEO](https://nuxtseo.com/)** for the sitemap, robots.txt and meta tags
 - **Canvas API** and a **Web Worker** for compression; no compression library is shipped
 - **[Vite PWA](https://vite-pwa-org.netlify.app/frameworks/nuxt)** (Workbox) for the offline service worker and web app manifest
@@ -231,13 +231,13 @@ Netlify builds with `yarn generate` and publishes `dist/`. `netlify.toml` sets:
 
 The build also writes `dist/_headers`, which gives the hashed files under `/_nuxt/` a one-year immutable cache.
 
-The service worker (`sw.js`) precaches about 600 KB: both pages, their scripts and styles, the compression worker and the icons. The 823 KB sample image is not precached; it is stored the first time someone loads it. A new deploy replaces the cache automatically on the next visit.
+The service worker (`sw.js`) precaches about 630 KB: both pages, their scripts and styles, the compression worker and the icons. The 823 KB sample image is not precached; it is stored the first time someone loads it. A new deploy replaces the cache automatically on the next visit.
 
 A push to `main` triggers a production deploy. Pull requests get a Deploy Preview.
 
 ## Security and accessibility audits
 
-> Last audited: 2026-11-10, for release 1.5.0. Details of every finding are in [CHANGELOG.md](CHANGELOG.md).
+> Last audited: 2026-11-10, for releases 1.5.0 and 1.5.1. Details of every finding are in [CHANGELOG.md](CHANGELOG.md).
 
 ### Security (red team / blue team)
 
@@ -252,14 +252,14 @@ A push to `main` triggers a production deploy. Pull requests get a Deploy Previe
 | # | Severity | Finding | Outcome |
 |---|----------|---------|---------|
 | M1 | Medium | The sample image was fetched from `images.unsplash.com`, disclosing each visitor's IP address to a third party and requiring that host in the CSP's `img-src` and `connect-src`. | **Fixed.** The sample is served from the site. The CSP now names no third-party host. A browser test fails if any request leaves the site. |
-| M2 | Medium | `yarn audit` reported 305 advisories (6 critical, 163 high) in build and test tooling. | **Mitigated.** Dependencies refreshed, and Vitest, happy-dom and sharp moved to their current major versions: 10 remain, none critical or high (9 moderate, 1 low). None of this code is shipped to visitors. See I2. |
+| M2 | Medium | `yarn audit` reported 305 advisories (6 critical, 163 high) in build and test tooling. | **Mitigated.** Dependencies refreshed, and Vitest, happy-dom, sharp and Nuxt UI moved to their current major versions: 10 remain, none critical or high (8 moderate, 2 low). None of this code is shipped to visitors. See I2. |
 | L1 | Low | No limit on pixel dimensions: a small file describing an enormous picture could exhaust memory and crash the tab. | **Fixed.** Pictures over 100 megapixels are refused, and the worker's cache of open pictures is capped at 80 megapixels. |
 | L2 | Low | A Web Worker that never answered was never stopped. | **Fixed.** A job unanswered after 60 seconds stops the worker; the next job starts a fresh one. |
 | L3 | Low | A dropped file of an unsupported type was added to the list before being refused, and stayed as a broken thumbnail. | **Fixed.** Files are validated before they are added; a picture that fails to compress is removed. |
 | L4 | Low | Moving the quality slider quickly could let an older compression overwrite a newer one, and released a result's memory while it was still displayed. | **Fixed.** Each recompression run is numbered; stale results are discarded. |
 | L5 | Low | No `Cross-Origin-Opener-Policy` or `Cross-Origin-Resource-Policy`; the CSP lacked `upgrade-insecure-requests`. | **Fixed.** All three added; `Permissions-Policy` widened. |
 | I1 | Info | `script-src` and `style-src` allow `'unsafe-inline'`. | **Accepted.** Nuxt's static pages carry an inline hydration script. The site renders no user-supplied HTML (no `v-html`), and `connect-src 'self'` leaves an injected script nowhere to send data. |
-| I2 | Info | The 10 remaining advisories: glob and minimatch inside build and test tools, deepmerge inside the service-worker build tool, and a Nuxt UI form component this project does not use. | **Accepted for now.** Development-only or unused. Nuxt UI 4, which clears one of them, was tried and breaks the build against `@nuxt/icon` 1.x; both need upgrading together. |
+| I2 | Info | The 10 remaining advisories: glob and minimatch inside build and test tools, deepmerge inside the service-worker build tool, and esbuild inside the font tooling that Nuxt UI brings in. | **Accepted for now.** All are build-time or test-time tools with no fixed release available through their parent packages yet. The Nuxt UI form-component advisory present in 1.5.0 was cleared in 1.5.1 by moving to Nuxt UI 4. |
 | I3 | Info | New in 1.5.0: a service worker and a ZIP writer, both of which are new attack surface. | **Reviewed.** The service worker is same-origin only, caches only the site's own files, and needs no CSP change. File names written into a ZIP have folders and control characters removed, so an entry cannot be extracted outside its folder. |
 
 **Blue team assessment.** The site is static files with no server-side code, no accounts, no cookies and no analytics. Input is validated by type, byte size and pixel count. No `v-html`, `eval` or dynamic script loading is used. The worker, the service worker and every asset are same-origin. Using Squish contacts no host other than the site itself, and that is now enforced by a test.
