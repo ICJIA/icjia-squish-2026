@@ -76,7 +76,7 @@ The five steps from drop to download, and how much room the picture takes up at 
 
 ## Quick start
 
-Requires Node.js 22 or later (see `.nvmrc`) and yarn.
+Requires Node.js 22.22.3 or later (Nuxt 4.6 refuses to install on older 22.x releases; `.nvmrc` pins a known-good version) and yarn.
 
 ```bash
 git clone https://github.com/ICJIA/icjia-squish-2026.git
@@ -225,7 +225,7 @@ icjia-squish-2026/
 
 Netlify builds with `yarn generate` and publishes `dist/`. `netlify.toml` sets:
 
-- **Node 22** and the `netlify-static` Nitro preset
+- **Node 22.23.4** (pinned, matching `.nvmrc`) and the `netlify-static` Nitro preset
 - **Content-Security-Policy** with no third-party host in any directive: `default-src 'self'`, `connect-src 'self'`, `img-src 'self' blob: data:`, `worker-src 'self'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`, `frame-ancestors 'none'`, `upgrade-insecure-requests`
 - **HSTS**, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Resource-Policy: same-origin`
 

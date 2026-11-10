@@ -92,6 +92,7 @@ Red team findings and what the blue team did about each:
   - Error messages are announced to screen readers (`role="alert"`).
 - The 22 auto-fixable ESLint errors in `test/` and one unused parameter. `yarn lint` now reports 0 errors (21 `no-console` warnings remain in `test/helpers/summary.ts`).
 - The test helper that replaces `Image` used an arrow function, which Vitest 4 no longer allows as a constructor.
+- `.nvmrc` pinned Node 22.14.0, which Nuxt 4.6 refuses to install on (it needs 22.22.3 or later). The first CI run and the first production build of this release both failed for that reason; the live site stayed on 1.4.1 throughout. `.nvmrc` and `netlify.toml` now pin 22.23.4.
 
 ### Verified
 
