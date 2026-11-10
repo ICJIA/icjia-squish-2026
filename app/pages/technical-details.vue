@@ -375,7 +375,7 @@ const PARTS = [
     plainName: 'The look',
     name: 'Nuxt UI and Tailwind CSS 4',
     plain: 'A dark, high-contrast design with large controls, built to work with a keyboard and a screen reader as well as a mouse.',
-    technical: 'Nuxt UI 3 components on Tailwind CSS 4 theme tokens, with Lucide icons compiled into the bundle at build time so that none is fetched at runtime.',
+    technical: 'Nuxt UI 4 components on Tailwind CSS 4 theme tokens, with Lucide icons compiled into the bundle at build time so that none is fetched at runtime.',
   },
   {
     plainName: 'The filing cabinet',

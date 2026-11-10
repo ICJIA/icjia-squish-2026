@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 |----------|-------|-------|-----------------------|---------|
 | Critical | 0 | — | 0 | — |
 | High | 0 | — | 0 | — |
-| Medium | 2 | 1 | 1 | Sample image moved from Unsplash to the site itself, so the CSP names no third-party host (fixed); 305 dependency advisories reduced to 10, none critical or high, all development-only or unused (mitigated) |
+| Medium | 2 | 1 | 1 | Sample image moved from Unsplash to the site itself, so the CSP names no third-party host (fixed); 305 dependency advisories reduced to 10, none critical or high, all in build-time or test-time tools (mitigated) |
 | Low | 5 | 5 | 0 | 100-megapixel limit; 60-second worker timeout; unsupported files refused before being listed; stale recompression results discarded; COOP, CORP and `upgrade-insecure-requests` added |
 | Informational | 3 | — | 3 | `'unsafe-inline'` in `script-src` and `style-src` (required by Nuxt static hydration); 10 remaining advisories; review of the new service worker and ZIP writer |
 
@@ -33,6 +33,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Standards tested: WCAG 2.0 A and AA, WCAG 2.1 A and AA, best practices. The comparison divider, which axe cannot assess, is now keyboard-operable.
 
 ---
+
+## [1.5.1] - 2026-11-10
+
+Completes the dependency work that 1.5.0 left open. No change to behaviour or appearance.
+
+### Changed
+
+- `@nuxt/ui` 3.3.7 → 4.12.0 and `@nuxt/icon` 1.15.0 → 2.6.2, upgraded together. In 1.5.0 Nuxt UI 4 alone failed the build, because it ships `@nuxt/icon` 2 and that conflicted with the project's 1.x.
+- The icon bundle now holds 48 icons (11.9 KB uncompressed), up from 9: the scan also picks up the default icons of Nuxt UI 4's components. All are still compiled in at build time, and none is fetched at runtime.
+- The offline cache is about 630 KB, up from about 600 KB.
+
+### Security
+
+- Clears the moderate Nuxt UI advisory (a form component this project does not use). `yarn audit` still reports 10, none critical or high: 8 moderate and 2 low, in glob and minimatch (build and test tools), deepmerge (the service-worker build tool) and esbuild (font tooling brought in by Nuxt UI 4). None is shipped to visitors.
+
+### Verified
+
+- `yarn lint` (0 errors), `yarn typecheck` (0 errors), `yarn test` (146 tests), `yarn generate` and the 25 browser tests pass, including the icon, no-third-party-request and offline tests.
+- axe-core reports 0 violations on the tool with an image loaded and on the technical details page.
+- Screenshots of the tool before and after the upgrade show no visible difference in the header, drop zone, preview, sliders, thumbnails or summary.
 
 ## [1.5.0] - 2026-11-10
 
