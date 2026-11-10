@@ -1,27 +1,32 @@
 # Squish
 
-> Squish is a free, privacy-focused image compression tool for writers and developers. It compresses PNG, JPEG, and WebP images instantly in the browser with a live before/after comparison slider — no account, no uploads, and no server. All processing happens locally on the user's device, so images never leave the browser.
+> Squish is a free, privacy-focused image compression tool for writers and developers. It compresses PNG, JPEG, WebP and AVIF images (and HEIC in Safari) instantly in the browser with a live before/after comparison slider — no account, no uploads, and no server. All processing happens locally on the user's device, so images never leave the browser.
 
-Squish is an open-source web application built with Nuxt 4 and published by the Illinois Criminal Justice Information Authority (ICJIA). Images are processed client-side with the HTML5 Canvas API; the original files are never modified and are never transmitted anywhere.
+Squish is an open-source web application built with Nuxt 4 and published by the Illinois Criminal Justice Information Authority (ICJIA). Images are processed client-side with the HTML5 Canvas API; the original files are never modified and are never transmitted anywhere. The site's Content Security Policy names no third-party host. Re-encoding removes EXIF metadata, including GPS position. PNG output is lossless, so the quality setting affects only JPEG and WebP.
 
 ## How it works
 
-- Drop or select PNG, JPEG, or WebP images (or load a sample image to try it).
+- Drop, select or paste PNG, JPEG, WebP or AVIF images up to 50 MB (HEIC in Safari), or load the bundled sample image to try it.
+- Optionally save as JPEG or WebP, and scale large images down to a chosen longest side.
 - Adjust the quality slider (10–100%); color-coded guidance flags when quality may suffer.
 - Drag the comparison slider to inspect original vs. compressed side by side; scroll to zoom (100–800%) and drag to pan.
-- Download images individually or all at once, with file sizes and savings shown inline.
+- Download images individually or together as one ZIP file, with file sizes and savings shown inline.
+- After the first visit the tool works offline.
 
 ## Features
 
-- Client-side compression for PNG, JPEG, and WebP — images never leave the device
+- Client-side compression for PNG, JPEG, WebP and AVIF — images never leave the device
+- Format conversion to JPEG or WebP, and resizing
+- Works offline and can be installed as an app
 - Live before/after comparison slider with zoom and pan
 - Adjustable quality with real-time size and savings stats
-- Batch processing with individual or bulk download
+- Batch processing with individual or ZIP download; paste from the clipboard
 - Dark, responsive, WCAG 2.1 AA-accessible interface
 
 ## Links
 
 - [Squish app](https://squish.icjia.app/): The live tool
+- [Technical details](https://squish.icjia.app/technical-details): An interactive, plain-language explanation of how Squish works, why smaller images matter, and why nothing is uploaded
 - [Source code](https://github.com/ICJIA/icjia-squish-2026): GitHub repository (MIT license)
 - [License](https://github.com/ICJIA/icjia-squish-2026/blob/main/LICENSE): MIT License
 

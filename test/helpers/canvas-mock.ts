@@ -1,5 +1,8 @@
 import { vi } from 'vitest'
 
+/** The environment's own Image, kept because tests replace the global one. */
+const RealImage = globalThis.Image
+
 /**
  * Mock canvas context with drawImage method
  */
@@ -69,17 +72,17 @@ export function mockCanvasContextFailure() {
  * Create a mock Image that triggers onload immediately
  */
 export function createMockImage(width = 100, height = 100): HTMLImageElement {
-  const img = new Image()
+  const img = new RealImage()
 
   Object.defineProperty(img, 'width', {
     value: width,
     writable: true,
-    configurable: true
+    configurable: true,
   })
   Object.defineProperty(img, 'height', {
     value: height,
     writable: true,
-    configurable: true
+    configurable: true,
   })
 
   // Override src setter to trigger onload
@@ -104,7 +107,7 @@ export function createMockImage(width = 100, height = 100): HTMLImageElement {
  * Create a mock Image that triggers onerror
  */
 export function createMockImageWithError(): HTMLImageElement {
-  const img = new Image()
+  const img = new RealImage()
 
   // Override src setter to trigger onerror
   let srcValue = ''
@@ -128,5 +131,9 @@ export function createMockImageWithError(): HTMLImageElement {
  * Mock the Image constructor
  */
 export function mockImageConstructor(mockImage: HTMLImageElement) {
-  global.Image = vi.fn(() => mockImage) as any
+  // A regular function, not an arrow: the code under test constructs an Image,
+  // and an arrow function cannot be used as a constructor.
+  global.Image = vi.fn(function () {
+    return mockImage
+  }) as any
 }

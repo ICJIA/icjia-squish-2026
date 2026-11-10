@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Type check
+        run: yarn typecheck
+
+      - name: Unit tests
+        run: yarn test
+
+      - name: Build the static site
+        run: yarn generate
+
+      # The browser tests run against dist/ served with the security headers
+      # from netlify.toml, so anything the production Content Security Policy
+      # would block fails here rather than after a deploy.
+      - name: Install the test browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Browser tests
+        run: yarn test:e2e:only
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7

@@ -77,8 +77,14 @@ const mockGetFileExtension = vi.fn().mockImplementation((format: string) => {
   return 'jpg'
 })
 
+// Validation passes by default; a test makes it throw to simulate a refused file
+const mockValidateFile = vi.fn()
+
 // Mock factory that returns the same mock instances every time
 const mockUseImageCompression = () => ({
+  validateFile: mockValidateFile,
+  releaseImage: vi.fn(),
+  getOutputFormat: vi.fn(() => 'image/jpeg'),
   compressImage: mockCompressImage,
   formatSize: mockFormatSize,
   getSavings: mockGetSavings,
@@ -88,16 +94,25 @@ const mockUseImageCompression = () => ({
 // Make it globally available (simulating Nuxt auto-import)
 globalThis.useImageCompression = mockUseImageCompression
 
-// Mock factory for validateFile
-const mockValidateFile = vi.fn()
-
 // Also mock the module for explicit imports
 vi.mock('~/composables/useImageCompression', () => ({
   useImageCompression: mockUseImageCompression,
   FileTooLargeError: class FileTooLargeError extends Error {
-    constructor(name: string, size: number) {
+    constructor(name: string, _size: number) {
       super(`${name} is too large. Maximum file size is 50 MB.`)
       this.name = 'FileTooLargeError'
+    }
+  },
+  DimensionsTooLargeError: class DimensionsTooLargeError extends Error {
+    constructor(name: string, width: number, height: number) {
+      super(`${name} is ${width} × ${height} pixels, which is too large to process safely.`)
+      this.name = 'DimensionsTooLargeError'
+    }
+  },
+  CannotDecodeError: class CannotDecodeError extends Error {
+    constructor(name: string, _heic: boolean) {
+      super(`This browser could not open ${name}.`)
+      this.name = 'CannotDecodeError'
     }
   },
   UnsupportedTypeError: class UnsupportedTypeError extends Error {

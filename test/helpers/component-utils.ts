@@ -1,4 +1,5 @@
-import { mount, VueWrapper } from '@vue/test-utils'
+import type { VueWrapper } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import type { Component } from 'vue'
 
 /**

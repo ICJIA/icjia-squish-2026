@@ -29,3 +29,7 @@ coverage
 test-results.json
 *.lcov
 
+
+# Playwright
+test-results
+playwright-report

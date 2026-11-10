@@ -8,7 +8,7 @@ import {
   createMockImageWithError,
   mockImageConstructor,
 } from '../../helpers/canvas-mock'
-import { mockPngFile, mockJpgFile, mockWebPFile, createMockBlob } from '../../fixtures/mock-files'
+import { mockPngFile, mockJpgFile, mockWebPFile, createMockBlob, createMockFile } from '../../fixtures/mock-files'
 
 // Unmock the composable for this test file - we want the real implementation
 vi.doUnmock('~/composables/useImageCompression')
@@ -39,6 +39,82 @@ describe('useImageCompression', () => {
       expect(result.url).toBe('blob:mock-url')
       expect(result.format).toBe('image/jpeg')
       expect(URL.createObjectURL).toHaveBeenCalledWith(mockBlob)
+    })
+
+    it('should refuse a picture with more pixels than the safety limit', async () => {
+      const file = mockJpgFile('huge.jpg')
+      mockImageConstructor(createMockImage(20000, 20000))
+      mockCanvasToBlob(createMockBlob(1000, 'image/jpeg'))
+
+      await expect(composable.compressImage(file, 75)).rejects.toThrow(/too large to process safely/)
+      expect(HTMLCanvasElement.prototype.toBlob).not.toHaveBeenCalled()
+    })
+
+    it('should scale a picture down to the longest side asked for', async () => {
+      const mockCtx = mockCanvasContext()
+      mockImageConstructor(createMockImage(4000, 3000))
+      mockCanvasToBlob(createMockBlob(1000, 'image/jpeg'), false)
+
+      await composable.compressImage(mockJpgFile(), 75, undefined, { maxDimension: 1600 })
+
+      expect(mockCtx.drawImage).toHaveBeenCalledWith(expect.anything(), 0, 0, 1600, 1200)
+    })
+
+    it('should never scale a picture up', async () => {
+      const mockCtx = mockCanvasContext()
+      mockImageConstructor(createMockImage(800, 600))
+      mockCanvasToBlob(createMockBlob(1000, 'image/jpeg'), false)
+
+      await composable.compressImage(mockJpgFile(), 75, undefined, { maxDimension: 1600 })
+
+      expect(mockCtx.drawImage).toHaveBeenCalledWith(expect.anything(), 0, 0, 800, 600)
+    })
+
+    it('should convert a PNG to WebP when asked', async () => {
+      mockImageConstructor(createMockImage())
+      mockCanvasToBlob(createMockBlob(500, 'image/webp'))
+
+      const result = await composable.compressImage(mockPngFile(), 75, 'image/webp')
+
+      expect(result.format).toBe('image/webp')
+      expect(HTMLCanvasElement.prototype.toBlob).toHaveBeenCalledWith(expect.any(Function), 'image/webp', 0.75)
+    })
+
+    it('should paint a white background before saving a JPEG', async () => {
+      const mockCtx = mockCanvasContext()
+      mockImageConstructor(createMockImage())
+      mockCanvasToBlob(createMockBlob(500, 'image/jpeg'), false)
+
+      await composable.compressImage(mockPngFile(), 75, 'image/jpeg')
+
+      expect(mockCtx.fillRect).toHaveBeenCalledWith(0, 0, 100, 100)
+    })
+
+    it('should treat "original" as keeping the format', async () => {
+      mockImageConstructor(createMockImage())
+      mockCanvasToBlob(createMockBlob(500, 'image/png'))
+
+      const result = await composable.compressImage(mockPngFile(), 75, 'original')
+
+      expect(result.format).toBe('image/png')
+    })
+
+    it('should save AVIF and HEIC input as JPEG, which browsers can write', () => {
+      expect(composable.getOutputFormat(createMockFile('a.avif', 'image/avif'))).toBe('image/jpeg')
+      expect(composable.getOutputFormat(createMockFile('a.heic', 'image/heic'), 'original')).toBe('image/jpeg')
+    })
+
+    it('should accept a HEIC file that reports no type, by its extension', () => {
+      expect(() => composable.validateFile(createMockFile('IMG_0001.HEIC', ''))).not.toThrow()
+      expect(() => composable.validateFile(createMockFile('notes.txt', ''))).toThrow(/unsupported type/)
+      expect(() => composable.validateFile(createMockFile('anim.gif', 'image/gif'))).toThrow(/unsupported type/)
+    })
+
+    it('should say so when the browser cannot open a HEIC photo', async () => {
+      mockImageConstructor(createMockImageWithError())
+
+      await expect(composable.compressImage(createMockFile('IMG_1.heic', 'image/heic'), 75))
+        .rejects.toThrow('This browser cannot open HEIC photos')
     })
 
     it('should compress a PNG image and preserve format', async () => {
@@ -127,7 +203,7 @@ describe('useImageCompression', () => {
 
       await composable.compressImage(file, 75)
 
-      expect(mockCtx.drawImage).toHaveBeenCalledWith(mockImg, 0, 0)
+      expect(mockCtx.drawImage).toHaveBeenCalledWith(mockImg, 0, 0, mockImg.width, mockImg.height)
     })
 
     it('should reject when canvas context cannot be created', async () => {
@@ -158,7 +234,7 @@ describe('useImageCompression', () => {
 
       mockImageConstructor(mockImg)
 
-      await expect(composable.compressImage(file, 75)).rejects.toThrow('Could not load image')
+      await expect(composable.compressImage(file, 75)).rejects.toThrow('could not open test.jpg')
     })
 
     it('should revoke blob URL after image loads', async () => {
@@ -172,7 +248,7 @@ describe('useImageCompression', () => {
       await composable.compressImage(file, 75)
 
       // Wait for the onload to complete
-      await new Promise((resolve) => setTimeout(resolve, 10))
+      await new Promise(resolve => setTimeout(resolve, 10))
 
       expect(URL.revokeObjectURL).toHaveBeenCalled()
     })
@@ -191,7 +267,7 @@ describe('useImageCompression', () => {
       }
 
       // Wait for the onerror to complete
-      await new Promise((resolve) => setTimeout(resolve, 10))
+      await new Promise(resolve => setTimeout(resolve, 10))
 
       expect(URL.revokeObjectURL).toHaveBeenCalled()
     })

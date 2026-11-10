@@ -77,7 +77,7 @@ describe('ComparisonSlider', () => {
         },
       })
 
-      const zoomInButton = wrapper.findAll('button').find((btn) =>
+      const zoomInButton = wrapper.findAll('button').find(btn =>
         btn.attributes('aria-label')?.includes('Zoom in'),
       )
 
@@ -97,7 +97,7 @@ describe('ComparisonSlider', () => {
       })
 
       // Zoom in first
-      const zoomInButton = wrapper.findAll('button').find((btn) =>
+      const zoomInButton = wrapper.findAll('button').find(btn =>
         btn.attributes('aria-label')?.includes('Zoom in'),
       )
       await zoomInButton?.trigger('click')
@@ -105,7 +105,7 @@ describe('ComparisonSlider', () => {
       expect(wrapper.text()).toContain('200%')
 
       // Now zoom out
-      const zoomOutButton = wrapper.findAll('button').find((btn) =>
+      const zoomOutButton = wrapper.findAll('button').find(btn =>
         btn.attributes('aria-label')?.includes('Zoom out'),
       )
       await zoomOutButton?.trigger('click')
@@ -120,7 +120,7 @@ describe('ComparisonSlider', () => {
         },
       })
 
-      const zoomInButton = wrapper.findAll('button').find((btn) =>
+      const zoomInButton = wrapper.findAll('button').find(btn =>
         btn.attributes('aria-label')?.includes('Zoom in'),
       )
 
@@ -141,7 +141,7 @@ describe('ComparisonSlider', () => {
         },
       })
 
-      const zoomInButton = wrapper.findAll('button').find((btn) =>
+      const zoomInButton = wrapper.findAll('button').find(btn =>
         btn.attributes('aria-label')?.includes('Zoom in'),
       )
 
@@ -161,10 +161,10 @@ describe('ComparisonSlider', () => {
         },
       })
 
-      const zoomInButton = wrapper.findAll('button').find((btn) =>
+      const zoomInButton = wrapper.findAll('button').find(btn =>
         btn.attributes('aria-label')?.includes('Zoom in'),
       )
-      const resetButton = wrapper.findAll('button').find((btn) =>
+      const resetButton = wrapper.findAll('button').find(btn =>
         btn.attributes('aria-label')?.includes('Reset zoom'),
       )
 
@@ -186,7 +186,7 @@ describe('ComparisonSlider', () => {
         },
       })
 
-      const resetButton = wrapper.findAll('button').find((btn) =>
+      const resetButton = wrapper.findAll('button').find(btn =>
         btn.attributes('aria-label')?.includes('Reset zoom'),
       )
 
@@ -201,7 +201,7 @@ describe('ComparisonSlider', () => {
         },
       })
 
-      const zoomOutButton = wrapper.findAll('button').find((btn) =>
+      const zoomOutButton = wrapper.findAll('button').find(btn =>
         btn.attributes('aria-label')?.includes('Zoom out'),
       )
 
@@ -216,10 +216,10 @@ describe('ComparisonSlider', () => {
         },
       })
 
-      const zoomInButton = wrapper.findAll('button').find((btn) =>
+      const zoomInButton = wrapper.findAll('button').find(btn =>
         btn.attributes('aria-label')?.includes('Zoom in'),
       )
-      const zoomOutButton = wrapper.findAll('button').find((btn) =>
+      const zoomOutButton = wrapper.findAll('button').find(btn =>
         btn.attributes('aria-label')?.includes('Zoom out'),
       )
 
@@ -248,7 +248,7 @@ describe('ComparisonSlider', () => {
         },
       })
 
-      const zoomInButton = wrapper.findAll('button').find((btn) =>
+      const zoomInButton = wrapper.findAll('button').find(btn =>
         btn.attributes('aria-label')?.includes('Zoom in'),
       )
 
@@ -322,7 +322,7 @@ describe('ComparisonSlider', () => {
         },
       })
 
-      const zoomInButton = wrapper.findAll('button').find((btn) =>
+      const zoomInButton = wrapper.findAll('button').find(btn =>
         btn.attributes('aria-label')?.includes('Zoom in'),
       )
       await zoomInButton?.trigger('click')
@@ -396,7 +396,7 @@ describe('ComparisonSlider', () => {
         },
       })
 
-      const zoomInButton = wrapper.findAll('button').find((btn) =>
+      const zoomInButton = wrapper.findAll('button').find(btn =>
         btn.attributes('aria-label')?.includes('Zoom in'),
       )
       await zoomInButton?.trigger('click')
@@ -416,9 +416,9 @@ describe('ComparisonSlider', () => {
       })
 
       const buttons = wrapper.findAll('button')
-      const zoomIn = buttons.find((btn) => btn.attributes('aria-label')?.includes('Zoom in'))
-      const zoomOut = buttons.find((btn) => btn.attributes('aria-label')?.includes('Zoom out'))
-      const reset = buttons.find((btn) => btn.attributes('aria-label')?.includes('Reset zoom'))
+      const zoomIn = buttons.find(btn => btn.attributes('aria-label')?.includes('Zoom in'))
+      const zoomOut = buttons.find(btn => btn.attributes('aria-label')?.includes('Zoom out'))
+      const reset = buttons.find(btn => btn.attributes('aria-label')?.includes('Reset zoom'))
 
       expect(zoomIn?.attributes('aria-label')).toBe('Zoom in')
       expect(zoomOut?.attributes('aria-label')).toBe('Zoom out')
@@ -494,6 +494,37 @@ describe('ComparisonSlider', () => {
       const images = wrapper.findAll('img')
       expect(images[0].attributes('src')).toBe('new-original.jpg')
       expect(images[1].attributes('src')).toBe('new-compressed.jpg')
+    })
+  })
+  describe('keyboard', () => {
+    const mountSlider = () => mount(ComparisonSlider, {
+      props: defaultProps,
+      global: { stubs: { UIcon: true, USlider: true } },
+    })
+
+    it('should expose the divider as a slider', () => {
+      const divider = mountSlider().find('[role="slider"][aria-label="Comparison divider"]')
+      expect(divider.exists()).toBe(true)
+      expect(divider.attributes('tabindex')).toBe('0')
+      expect(divider.attributes('aria-valuenow')).toBe('50')
+    })
+
+    it('should move the divider with the arrow keys', async () => {
+      const divider = mountSlider().find('[aria-label="Comparison divider"]')
+      await divider.trigger('keydown', { key: 'ArrowRight' })
+      expect(divider.attributes('aria-valuenow')).toBe('52')
+      await divider.trigger('keydown', { key: 'ArrowLeft', shiftKey: true })
+      expect(divider.attributes('aria-valuenow')).toBe('42')
+    })
+
+    it('should jump to the ends with Home and End and stay in range', async () => {
+      const divider = mountSlider().find('[aria-label="Comparison divider"]')
+      await divider.trigger('keydown', { key: 'End' })
+      expect(divider.attributes('aria-valuenow')).toBe('100')
+      await divider.trigger('keydown', { key: 'ArrowRight' })
+      expect(divider.attributes('aria-valuenow')).toBe('100')
+      await divider.trigger('keydown', { key: 'Home' })
+      expect(divider.attributes('aria-valuenow')).toBe('0')
     })
   })
 })

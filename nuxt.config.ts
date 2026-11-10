@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 
-  modules: ['@nuxt/ui', '@nuxt/icon', '@nuxtjs/seo'],
+  modules: ['@nuxt/ui', '@nuxt/icon', '@nuxtjs/seo', '@vite-pwa/nuxt'],
 
   // Static site generation for Netlify with SSR for SEO
   ssr: true,
@@ -134,6 +134,49 @@ export default defineNuxtConfig({
   // OG Image configuration (disabled for static sites)
   ogImage: {
     enabled: false,
+  },
+
+  // Offline support. A service worker stores the site's own files on the first
+  // visit, so the tool keeps working with no connection at all: the plainest
+  // demonstration that pictures are not sent anywhere. It is same-origin only
+  // and adds nothing to the Content Security Policy.
+  pwa: {
+    registerType: 'autoUpdate',
+    manifest: {
+      name: 'Squish',
+      short_name: 'Squish',
+      description: 'Privacy-focused image compression in your browser. No uploads.',
+      lang: 'en',
+      start_url: '/',
+      display: 'standalone',
+      theme_color: '#0d0d0d',
+      background_color: '#222222',
+      icons: [
+        { src: '/pwa-192.png', sizes: '192x192', type: 'image/png' },
+        { src: '/pwa-512.png', sizes: '512x512', type: 'image/png' },
+        { src: '/pwa-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      ],
+    },
+    workbox: {
+      // Everything the two pages need, including the compression worker and
+      // lazily loaded chunks. The 823 KB sample image is left out so that no
+      // visitor downloads it without asking; it is cached when first used.
+      globPatterns: ['**/*.{js,css,html,svg,png,ico,json,webmanifest}'],
+      globIgnores: ['**/og-image.*', '**/sample-cityscape.jpg', '200.html', '404.html'],
+      navigateFallback: null,
+      cleanupOutdatedCaches: true,
+      clientsClaim: true,
+      skipWaiting: true,
+      runtimeCaching: [
+        {
+          urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname === '/sample-cityscape.jpg',
+          handler: 'CacheFirst',
+          options: { cacheName: 'squish-sample' },
+        },
+      ],
+    },
+    client: { installPrompt: false },
+    devOptions: { enabled: false },
   },
 
   // Robots.txt configuration

@@ -14,13 +14,14 @@ html, body {
   --color-popover: oklch(0.18 0 0);
   --color-popover-foreground: oklch(0.96 0 0);
   --color-primary: oklch(0.80 0.18 152);
-  --color-primary-foreground: oklch(1 0 0);
+  /* Dark text on the green accent: white on it is about 1.8:1, far below WCAG AA. */
+  --color-primary-foreground: oklch(0.15 0 0);
   --color-secondary: oklch(0.22 0 0);
   --color-secondary-foreground: oklch(0.96 0 0);
   --color-muted: oklch(0.25 0 0);
   --color-muted-foreground: oklch(0.6 0 0);
   --color-accent: oklch(0.80 0.18 152);
-  --color-accent-foreground: oklch(1 0 0);
+  --color-accent-foreground: oklch(0.15 0 0);
   --color-accented: oklch(0.28 0 0);
   --color-destructive: oklch(0.55 0.22 25);
   --color-destructive-foreground: oklch(0.98 0 0);
@@ -60,4 +61,105 @@ html, body {
   flex-shrink: 0 !important;
   background-color: oklch(0.18 0 0) !important;
   border: 2px solid oklch(0.80 0.18 152) !important;
+}
+
+/* Native select in the tool's sidebar */
+.squish-select {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  background-color: var(--color-background);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9375rem;
+  color: var(--color-foreground);
+  color-scheme: dark;
+}
+
+.squish-select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Controls shared by the explainers on /technical-details. Text on the green
+   accent is always dark: white on this green is far below WCAG AA contrast. */
+.tech-range {
+  display: block;
+  width: 100%;
+  height: 1.75rem;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+.tech-chip,
+.tech-tab,
+.tech-choice > span {
+  display: inline-block;
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-foreground);
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.tech-tab {
+  border-color: transparent;
+  padding: 0.55rem 1rem;
+}
+
+.tech-chip:hover:not(:disabled),
+.tech-tab:hover,
+.tech-choice > span:hover {
+  border-color: var(--color-primary);
+}
+
+.tech-chip[aria-pressed='true'],
+.tech-tab[aria-pressed='true'],
+.tech-choice > input:checked + span {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: oklch(0.15 0 0);
+}
+
+.tech-chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.tech-cta {
+  display: inline-block;
+  border-radius: 0.375rem;
+  background-color: var(--color-primary);
+  padding: 0.6rem 1.1rem;
+  font-weight: 700;
+  color: oklch(0.15 0 0);
+  transition: background-color 0.15s;
+}
+
+.tech-cta:hover {
+  background-color: oklch(0.86 0.18 152);
+}
+
+.tech-cta--large {
+  padding: 1rem 1.75rem;
+  font-size: 1.375rem;
+}
+
+.tech-link {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tech-chip:focus-visible,
+.tech-tab:focus-visible,
+.tech-cta:focus-visible,
+.tech-link:focus-visible,
+.tech-range:focus-visible,
+.tech-choice > input:focus-visible + span {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
 }

@@ -7,6 +7,12 @@
         </h1>
         <div class="flex items-center gap-6">
           <span class="hidden text-sm tracking-wide text-muted-foreground sm:block">image compression for writers and developers</span>
+          <NuxtLink
+            to="/technical-details"
+            class="text-sm font-medium text-muted-foreground underline underline-offset-4 transition-colors hover:text-primary"
+          >
+            How it works
+          </NuxtLink>
           <a
             href="https://github.com/ICJIA/icjia-squish-2026"
             target="_blank"
@@ -39,7 +45,7 @@
           >
             <input
               type="file"
-              accept="image/png,image/jpeg,image/jpg,image/webp"
+              :accept="ACCEPT_ATTRIBUTE"
               multiple
               class="absolute inset-0 cursor-pointer opacity-0"
               aria-label="Select images to compress"
@@ -55,7 +61,7 @@
                   {{ isDragging ? 'Release to squish' : 'Drop images here' }}
                 </p>
                 <p class="mt-1 text-sm text-muted-foreground">
-                  or click to browse — PNG, JPG, and WebP supported
+                  or click to browse, or paste from the clipboard. PNG, JPG, WebP and AVIF; HEIC in Safari.
                 </p>
               </div>
               <button
@@ -151,30 +157,33 @@
               <div
                 v-for="img in images"
                 :key="img.id"
-                :class="['group relative cursor-pointer overflow-hidden rounded border-2 transition-all', selectedImageId === img.id ? 'border-primary' : 'border-transparent hover:border-muted-foreground']"
-                role="button"
-                tabindex="0"
-                @click="selectedImageId = img.id"
-                @keydown.enter="selectedImageId = img.id"
-                @keydown.space.prevent="selectedImageId = img.id"
+                :class="['group relative overflow-hidden rounded border-2 transition-all', selectedImageId === img.id ? 'border-primary' : 'border-transparent hover:border-muted-foreground']"
               >
-                <div class="aspect-square bg-muted">
+                <!-- Selecting is its own button, a sibling of Download and Remove:
+                     a button may not contain other buttons. -->
+                <button
+                  type="button"
+                  class="block aspect-square w-full cursor-pointer bg-muted focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
+                  :aria-label="`Preview ${img.originalFile.name}`"
+                  :aria-pressed="selectedImageId === img.id"
+                  @click="selectedImageId = img.id"
+                >
                   <img
                     :src="img.previewUrl"
-                    :alt="img.originalFile.name"
+                    alt=""
                     class="h-full w-full object-cover"
                   >
-                </div>
+                </button>
                 <div
                   v-if="getSavings(img.originalSize, img.compressedSize) > 0"
-                  class="absolute top-2 left-2 rounded bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-foreground"
+                  class="pointer-events-none absolute top-2 left-2 rounded bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-foreground"
                 >
                   -{{ getSavings(img.originalSize, img.compressedSize) }}%
                 </div>
-                <div class="absolute inset-0 flex items-center justify-center gap-2 bg-background/80 opacity-0 transition-opacity group-hover:opacity-100">
+                <div class="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 bg-background/80 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
                   <button
-                    class="rounded-full bg-primary p-2 text-primary-foreground transition-colors hover:bg-primary/90"
-                    aria-label="Download"
+                    class="pointer-events-auto rounded-full bg-primary p-2 text-primary-foreground transition-colors hover:bg-primary/90"
+                    :aria-label="`Download ${img.originalFile.name}`"
                     @click.stop="downloadImage(img)"
                   >
                     <UIcon
@@ -183,8 +192,8 @@
                     />
                   </button>
                   <button
-                    class="rounded-full bg-destructive p-2 text-destructive-foreground transition-colors hover:bg-destructive/90"
-                    aria-label="Remove"
+                    class="pointer-events-auto rounded-full bg-destructive p-2 text-destructive-foreground transition-colors hover:bg-destructive/90"
+                    :aria-label="`Remove ${img.originalFile.name}`"
                     @click.stop="removeImage(img.id)"
                   >
                     <UIcon
@@ -193,7 +202,7 @@
                     />
                   </button>
                 </div>
-                <div class="absolute inset-x-0 bottom-0 bg-linear-to-t from-background/90 to-transparent p-2 pt-6">
+                <div class="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-background/90 to-transparent p-2 pt-6">
                   <p class="truncate text-xs text-foreground">
                     {{ formatSize(img.compressedSize) }}
                   </p>
@@ -232,6 +241,55 @@
               :quality="quality"
               :savings="totalSavings"
             />
+            <div class="space-y-4 border-t border-border pt-5">
+              <div>
+                <label
+                  for="output-format"
+                  class="block text-sm font-medium text-foreground"
+                >Save as</label>
+                <select
+                  id="output-format"
+                  v-model="outputFormat"
+                  class="squish-select mt-1.5"
+                >
+                  <option
+                    v-for="option in OUTPUT_FORMATS"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
+                  </option>
+                </select>
+              </div>
+              <div>
+                <label
+                  for="max-dimension"
+                  class="block text-sm font-medium text-foreground"
+                >Longest side</label>
+                <select
+                  id="max-dimension"
+                  v-model.number="maxDimension"
+                  class="squish-select mt-1.5"
+                >
+                  <option
+                    v-for="option in RESIZE_OPTIONS"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
+                  </option>
+                </select>
+                <p class="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                  Pictures larger than this are scaled down. Smaller ones are left alone.
+                </p>
+              </div>
+              <p
+                v-if="hasLosslessOutput"
+                class="rounded border border-yellow-400/40 bg-yellow-400/5 p-3 text-xs leading-relaxed text-foreground"
+              >
+                PNG never throws detail away, so the quality slider does not change PNG files. Choose JPG or WebP under "Save as" to make them much smaller.
+              </p>
+            </div>
           </div>
           <div
             v-if="images.length > 0"
@@ -271,7 +329,7 @@
               <UIcon
                 name="i-lucide-download"
                 class="h-5 w-5"
-              />Download all
+              />Download all as a ZIP
             </button>
           </div>
           <div
@@ -283,6 +341,7 @@
           </div>
           <div
             v-if="errorMessage"
+            role="alert"
             class="rounded border border-destructive bg-destructive/10 p-4"
           >
             <div class="flex items-start gap-3">
@@ -309,6 +368,12 @@
           <p class="text-sm text-muted-foreground">
             All processing happens locally in your browser. Your images never leave your device.
           </p>
+          <NuxtLink
+            to="/technical-details"
+            class="text-sm font-medium text-primary underline underline-offset-4"
+          >
+            How Squish works, in plain words
+          </NuxtLink>
         </div>
       </div>
     </footer>
@@ -317,13 +382,17 @@
 
 <script setup lang="ts">
 import type { CompressedImage } from '~/composables/useImageCompression'
-import { FileTooLargeError, UnsupportedTypeError } from '~/composables/useImageCompression'
-import { QUALITY_DEFAULT, QUALITY_MIN, QUALITY_MAX, QUALITY_STEP, MAX_FILE_SIZE, DEBOUNCE_DELAY_MS, SAMPLE_IMAGE_URL, SAMPLE_IMAGE_FILENAME, SAMPLE_DEMO_QUALITY } from '~/utils/constants'
+import { FileTooLargeError, UnsupportedTypeError, DimensionsTooLargeError, CannotDecodeError } from '~/composables/useImageCompression'
+import type { OutputFormatChoice } from '~/utils/constants'
+import { QUALITY_DEFAULT, QUALITY_MIN, QUALITY_MAX, QUALITY_STEP, DEBOUNCE_DELAY_MS, SAMPLE_IMAGE_URL, SAMPLE_IMAGE_FILENAME, SAMPLE_DEMO_QUALITY, ACCEPT_ATTRIBUTE, OUTPUT_FORMATS, RESIZE_OPTIONS } from '~/utils/constants'
+import { createZip } from '~/utils/zip'
 
-const { compressImage, formatSize, getSavings, getFileExtension } = useImageCompression()
+const { compressImage, releaseImage, formatSize, getSavings, getFileExtension, validateFile } = useImageCompression()
 
 const images = ref<CompressedImage[]>([])
 const quality = ref(QUALITY_DEFAULT)
+const outputFormat = ref<OutputFormatChoice>('original')
+const maxDimension = ref(0)
 const isDragging = ref(false)
 const selectedImageId = ref<string | null>(null)
 const isCompressing = ref(false)
@@ -342,6 +411,12 @@ const compressionProgressText = computed(() => {
   if (compressionTotal.value <= 1) return 'Compressing...'
   return `Compressing ${compressionCurrent.value} of ${compressionTotal.value}...`
 })
+
+/** True when at least one picture is being saved as PNG, which ignores the quality slider. */
+const hasLosslessOutput = computed(() => images.value.some(img => img.compressedBlob && img.outputFormat === 'image/png'))
+
+/** Compress with the current quality, format and size settings. */
+const compress = (file: File) => compressImage(file, quality.value, outputFormat.value, { maxDimension: maxDimension.value })
 
 const qualityTier = computed(() => {
   if (quality.value >= 50) return 'good'
@@ -370,7 +445,9 @@ const handleDragLeave = () => {
 const handleDrop = async (e: DragEvent) => {
   e.preventDefault()
   isDragging.value = false
-  const files = Array.from(e.dataTransfer?.files || []).filter(f => f.type.startsWith('image/'))
+  // Every dropped file goes through validation, so an unsupported one gets a
+  // message instead of being silently ignored.
+  const files = Array.from(e.dataTransfer?.files || [])
   if (files.length > 0) {
     if (isSampleImage.value) clearAll()
     isSampleImage.value = false
@@ -391,6 +468,16 @@ const handleFileSelect = async (e: Event) => {
   input.value = ''
 }
 
+let errorTimer: ReturnType<typeof setTimeout> | null = null
+
+const showError = (message: string) => {
+  errorMessage.value = message
+  if (errorTimer) clearTimeout(errorTimer)
+  errorTimer = setTimeout(() => {
+    errorMessage.value = null
+  }, 5000)
+}
+
 const processFiles = async (files: File[]) => {
   isCompressing.value = true
   compressionTotal.value = files.length
@@ -399,12 +486,13 @@ const processFiles = async (files: File[]) => {
   for (const file of files) {
     compressionCurrent.value++
 
-    // Validate file size before processing
-    if (file.size > MAX_FILE_SIZE) {
-      errorMessage.value = `${file.name} is too large (${formatSize(file.size)}). Maximum is ${formatSize(MAX_FILE_SIZE)}.`
-      setTimeout(() => {
-        errorMessage.value = null
-      }, 5000)
+    // Refuse a file that is too large or of an unsupported type before it is
+    // added to the list, so a rejected file never lingers as a broken thumbnail.
+    try {
+      validateFile(file)
+    }
+    catch (error) {
+      showError(error instanceof Error ? error.message : `${file.name} could not be added.`)
       continue
     }
 
@@ -424,7 +512,7 @@ const processFiles = async (files: File[]) => {
     if (!selectedImageId.value)
       selectedImageId.value = id
     try {
-      const { blob, url, format } = await compressImage(file, quality.value)
+      const { blob, url, format } = await compress(file)
       const idx = images.value.findIndex(img => img.id === id)
       if (idx !== -1) {
         const image = images.value[idx]
@@ -438,13 +526,12 @@ const processFiles = async (files: File[]) => {
     }
     catch (error) {
       console.error('Compression failed:', error)
-      const msg = error instanceof FileTooLargeError || error instanceof UnsupportedTypeError
+      const msg = error instanceof FileTooLargeError || error instanceof UnsupportedTypeError || error instanceof DimensionsTooLargeError || error instanceof CannotDecodeError
         ? error.message
         : `Failed to compress ${file.name}. Please try again.`
-      errorMessage.value = msg
-      setTimeout(() => {
-        errorMessage.value = null
-      }, 5000)
+      showError(msg)
+      // A picture that could not be compressed has nothing to preview or download.
+      removeImage(id)
     }
   }
   isCompressing.value = false
@@ -452,13 +539,24 @@ const processFiles = async (files: File[]) => {
   compressionTotal.value = 0
 }
 
+// Each run gets a number. Moving the slider again starts a newer run, and an
+// older run that is still working must not overwrite the newer run's results.
+let recompressRun = 0
+
 const recompressAll = async () => {
+  const run = ++recompressRun
   isCompressing.value = true
-  for (const img of images.value) {
-    if (img.compressedUrl)
-      URL.revokeObjectURL(img.compressedUrl)
+  for (const img of [...images.value]) {
     try {
-      const { blob, url, format } = await compressImage(img.originalFile, quality.value)
+      const { blob, url, format } = await compress(img.originalFile)
+      if (run !== recompressRun || !images.value.some(i => i.id === img.id)) {
+        URL.revokeObjectURL(url)
+        if (run !== recompressRun) return
+        continue
+      }
+      // Release the previous result only once its replacement is ready.
+      if (img.compressedUrl)
+        URL.revokeObjectURL(img.compressedUrl)
       img.compressedBlob = blob
       img.compressedSize = blob.size
       img.compressedUrl = url
@@ -466,37 +564,65 @@ const recompressAll = async () => {
     }
     catch (error) {
       console.error('Recompression failed:', error)
-      errorMessage.value = 'Failed to recompress images. Please try again.'
-      setTimeout(() => {
-        errorMessage.value = null
-      }, 5000)
+      showError('Failed to recompress images. Please try again.')
     }
   }
-  isCompressing.value = false
+  if (run === recompressRun) isCompressing.value = false
 }
 
-const downloadImage = (img: CompressedImage) => {
-  if (!img.compressedBlob) return
+const downloadName = (img: CompressedImage) =>
+  img.originalFile.name.replace(/\.[^.]+$/, '') + `_compressed.${getFileExtension(img.outputFormat)}`
+
+const saveBlob = (blob: Blob, name: string) => {
   const a = document.createElement('a')
-  const url = URL.createObjectURL(img.compressedBlob)
-  const extension = getFileExtension(img.outputFormat)
+  const url = URL.createObjectURL(blob)
   a.href = url
-  a.download = img.originalFile.name.replace(/\.[^.]+$/, '') + `_compressed.${extension}`
+  a.download = name
   a.click()
   // Delay revocation to ensure download initiates
   setTimeout(() => URL.revokeObjectURL(url), 100)
 }
 
+const downloadImage = (img: CompressedImage) => {
+  if (!img.compressedBlob) return
+  saveBlob(img.compressedBlob, downloadName(img))
+}
+
+/** One ZIP rather than one download per picture, which browsers tend to block. */
 const downloadAll = async () => {
-  for (const img of images.value) {
-    if (img.compressedBlob)
-      downloadImage(img)
+  const ready = images.value.filter(img => img.compressedBlob)
+  if (ready.length === 0) return
+  if (ready.length === 1) {
+    downloadImage(ready[0]!)
+    return
   }
+  try {
+    const entries = await Promise.all(ready.map(async img => ({
+      name: downloadName(img),
+      data: new Uint8Array(await img.compressedBlob!.arrayBuffer()),
+    })))
+    saveBlob(new Blob([createZip(entries)], { type: 'application/zip' }), 'squish-images.zip')
+  }
+  catch (error) {
+    console.error('Could not build ZIP:', error)
+    showError('Could not build the ZIP file. Try downloading the pictures one at a time.')
+  }
+}
+
+/** Pasting a copied picture or screenshot works like dropping it. */
+const handlePaste = async (e: ClipboardEvent) => {
+  const files = Array.from(e.clipboardData?.files || []).filter(f => f.type.startsWith('image/'))
+  if (files.length === 0) return
+  e.preventDefault()
+  if (isSampleImage.value) clearAll()
+  isSampleImage.value = false
+  await processFiles(files)
 }
 
 const removeImage = (id: string) => {
   const img = images.value.find(i => i.id === id)
   if (img) {
+    releaseImage(img.originalFile)
     URL.revokeObjectURL(img.previewUrl)
     if (img.compressedUrl)
       URL.revokeObjectURL(img.compressedUrl)
@@ -515,6 +641,7 @@ const clearAll = () => {
   images.value = []
   selectedImageId.value = null
   isSampleImage.value = false
+  releaseImage()
 }
 
 const { debounced: debouncedRecompress } = useDebounce(async () => {
@@ -530,6 +657,11 @@ watch(quality, async () => {
   if (images.value.length === 0) return
   debouncedRecompress()
 }, { immediate: false })
+
+watch([outputFormat, maxDimension], () => {
+  if (images.value.length === 0) return
+  debouncedRecompress()
+})
 
 const loadSampleImage = async () => {
   if (images.value.length > 0) return
@@ -554,11 +686,15 @@ const loadSampleImage = async () => {
 }
 
 onMounted(async () => {
+  window.addEventListener('paste', handlePaste)
   await nextTick()
   ensureSliderThumbHasName()
 })
 
 onUnmounted(() => {
+  window.removeEventListener('paste', handlePaste)
+  releaseImage()
+  if (errorTimer) clearTimeout(errorTimer)
   images.value.forEach((img) => {
     URL.revokeObjectURL(img.previewUrl)
     if (img.compressedUrl)

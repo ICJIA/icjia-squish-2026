@@ -43,7 +43,7 @@
           </div>
         </div>
         <div class="text-xs text-muted-foreground">
-          <span v-if="zoom > 100">Drag to pan · </span>Scroll to zoom
+          <span v-if="zoom > 100">Drag to pan · </span>Scroll to zoom · Arrow keys move the divider
         </div>
       </div>
 
@@ -119,13 +119,22 @@
 
       <!-- Divider Line -->
       <div
-        class="absolute top-0 bottom-0 w-0.5 bg-primary shadow-lg"
+        class="comparison-divider absolute top-0 bottom-0 w-0.5 bg-primary shadow-lg"
         :style="{ left: `${position}%`, transform: 'translateX(-50%)', cursor: 'ew-resize' }"
+        role="slider"
+        tabindex="0"
+        aria-label="Comparison divider"
+        aria-orientation="horizontal"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        :aria-valuenow="Math.round(position)"
+        :aria-valuetext="`Compressed picture shown across ${Math.round(position)}% of the preview`"
         @mousedown.stop="handleSliderMouseDown"
         @touchstart.stop="handleSliderTouchStart"
+        @keydown="handleDividerKey"
       >
         <!-- Handle -->
-        <div class="absolute top-1/2 left-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-primary bg-background shadow-lg">
+        <div class="comparison-handle absolute top-1/2 left-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-primary bg-background shadow-lg">
           <UIcon
             name="i-lucide-chevron-left"
             class="h-4 w-4 -mr-1 text-primary"
@@ -237,6 +246,21 @@ const handleSliderMove = (clientX: number) => {
   position.value = percentage
 }
 
+// Keyboard: the divider is a slider, so the arrow keys, Home and End move it.
+const handleDividerKey = (e: KeyboardEvent) => {
+  const step = e.shiftKey ? 10 : 2
+  let next = position.value
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') next -= step
+  else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') next += step
+  else if (e.key === 'PageDown') next -= 10
+  else if (e.key === 'PageUp') next += 10
+  else if (e.key === 'Home') next = 0
+  else if (e.key === 'End') next = 100
+  else return
+  e.preventDefault()
+  position.value = Math.max(0, Math.min(100, next))
+}
+
 // Window-level move/up handlers so dragging works even when cursor leaves the container
 const onWindowMouseMove = (e: MouseEvent) => {
   if (isDraggingSlider.value) {
@@ -344,3 +368,14 @@ onUnmounted(() => {
   window.removeEventListener('mouseup', onWindowMouseUp)
 })
 </script>
+
+<style scoped>
+.comparison-divider:focus {
+  outline: none;
+}
+
+.comparison-divider:focus-visible .comparison-handle {
+  outline: 3px solid var(--color-foreground);
+  outline-offset: 3px;
+}
+</style>
